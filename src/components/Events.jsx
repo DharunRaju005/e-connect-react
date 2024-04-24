@@ -1,350 +1,728 @@
 import React from "react";
-import styled, { createGlobalStyle } from "styled-components";
-import EventCardImage from "../Asserts/psgitech.png";
-import logo_Registered from "../Asserts/logo_Registered.svg";
-import school from "../Asserts/School.svg";
-import bar_chart from "../Asserts/bar-chart-2.svg";
-import logo_location from "../Asserts/logo_location.svg";
-import logo_eye from "../Asserts/logo_eye.svg";
-import logo_member from "../Asserts/logo_member.svg";
-import logo_time from "../Asserts/logo_time.svg";
-import logo_heart from "../Asserts/logo_heart.svg";
-import calendar from "../Asserts/calendar.svg";
-import logo_shares from "../Asserts/logo_share.svg";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import moniter from "../Asserts/moniter.svg";
+import codeScreen from "../Asserts/codeScreen.svg";
+import conference from "../Asserts/conference.svg";
+import paperPresentation from "../Asserts/paperPresentation.svg";
+import FlowChart from "../Asserts/FlowChart.svg";
 
-const GlobalStyle = createGlobalStyle`
-  body {
-    margin: 0;
-    padding: 0;
-    background-color:#D9D9D9;
-    //font-family: 'Arial', sans-serif; /* Example font family */
-    /* Add any other global styles you want to apply */
+const FilterSidebar = () => {
+  return (
+    <SidebarContainer>
+      <FilterTitle>Filter Options</FilterTitle>
+      <FilterSection>
+        <SectionTitle>Location</SectionTitle>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Online
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Offline
+        </CheckboxLabel>
+        <SectionTitle>Participants</SectionTitle>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Students
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Working Professional
+        </CheckboxLabel>
+        <SectionTitle>No. of Days:</SectionTitle>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          1-14 days
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          15-1 month
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          1+ month
+        </CheckboxLabel>
+        <SectionTitle>Tag</SectionTitle>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Block-Chain Technology
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Generative AI
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Machine Learning
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Fintech
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Gaming
+        </CheckboxLabel>
+        <CheckboxLabel>
+          <input type="checkbox" />
+          Others
+        </CheckboxLabel>
+      </FilterSection>
+    </SidebarContainer>
+  );
+};
+
+const SidebarContainer = styled.div`
+  margin-top:3rem;
+  width: 20%;
+  background-color: transparent;
+  margin: none;
+  margin-right:1px solid black;
+  color: black;
+  //box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  height: 100%;
+  position: sticky;
+  top: 0;
+  padding: 1rem;
+`;
+
+const FilterTitle = styled.h3`
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+`;
+
+const FilterSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+`;
+
+const SectionTitle = styled.h4`
+  font-size: 1rem;
+  padding: 2rem;
+  padding-left: 0rem;
+`;
+
+const CheckboxLabel = styled.label`
+  display: block;
+  margin-bottom: 1rem;
+  & input{
+    margin-top:0.5rem;
+    margin-left:1rem;
   }
 `;
 
 const Events = () => {
+  const Hackathon = () => {
+    return (
+      <>
+        <p style={{ fontSize: "1.5rem", fontWeight: "700", marginLeft: "3rem", padding: "2rem", marginTop: "2rem" }}>Hackathons:</p>
+        <HackContainer>
+          <Hclg>
+            <h4>PSG Hackathon for Men</h4>
+            <Content>The PSG Hackathon for Men is a collaborative event bringing together innovative minds to tackle challenges in various domains related to men's health, wellness, and lifestyle.</Content>
+            <img src={moniter} alt="" />
+            <DateLocation>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                <p>22-02-2025</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                <p>Coimbatore</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>4-5 per team</p>
+              </div>
+            </DateLocation>
+            <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "2rem" }}>Price Pool: $10,000</div>
+            <ActionBtn>
+              <button>Register Now</button>
+              <div style={{ display: "flex", width: "auto", height: "auto", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                  Learn More --&gt;
+                </Link>
+              </div>
+            </ActionBtn>
+          </Hclg>
+          <Hclg>
+            <h4>PSG Hackathon for Men</h4>
+            <Content>The PSG Hackathon for Men is a collaborative event bringing together innovative minds to tackle challenges in various domains related to men's health, wellness, and lifestyle.</Content>
+            <img src={moniter} alt="" />
+            <DateLocation>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                <p>22-02-2025</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                <p>Coimbatore</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>4-5 per team</p>
+              </div>
+            </DateLocation>
+            <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "2rem" }}>Price Pool: $10,000</div>
+            <ActionBtn>
+              <button>Register Now</button>
+              <div style={{ display: "flex", width: "auto", height: "auto", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                  Learn More --&gt;
+                </Link>
+              </div>
+            </ActionBtn>
+          </Hclg>
+          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end", cursor: "pointer" }}>View All -&gt;</div>
+          <HcsmContainer>
+            <Hcsm>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>Visa Hackathon</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>Innovate and collaborate to solve challenges in digital payments, enhancing user experience and security.</p>
+              <img src={codeScreen} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+            <Hcsm>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>Visa Hackathon</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>Innovate and collaborate to solve challenges in digital payments, enhancing user experience and security.</p>
+              <img src={codeScreen} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+            <Hcsm>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>Visa Hackathon</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>Innovate and collaborate to solve challenges in digital payments, enhancing user experience and security.</p>
+              <img src={codeScreen} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+          </HcsmContainer>
+        </HackContainer>
+      </>
+    );
+  };
+
+  const Conference = () => {
+    return (
+      <>
+        <p style={{ fontSize: "1.5rem", fontWeight: "700", marginLeft: "3rem", padding: "2rem", marginTop: "2rem" }}>Conference:</p>
+        <HackContainer>
+          <Hclg style={{ backgroundColor: "#D8F3DC" }}>
+            <h4>International Conference on Emerging Technologies in Computer Science </h4>
+            <Content>ETCS aims to host a premier academic event for knowledge exchange in computer science, fostering collaboration among researchers worldwide.</Content>
+            <img src={conference} alt="" />
+            <DateLocation>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                <p>22-02-2025</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                <p>Coimbatore</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>4-5 per team</p>
+              </div>
+            </DateLocation>
+            <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "2rem" }}>Price Pool: $10,000</div>
+            <ActionBtn>
+              <button>Register Now</button>
+              <div style={{ display: "flex", width: "auto", height: "auto", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                  Learn More --&gt;
+                </Link>
+              </div>
+            </ActionBtn>
+          </Hclg>
+          <Hclg style={{ backgroundColor: "#D8F3DC" }}>
+            <h4>International Conference on Emerging Technologies in Computer Science </h4>
+            <Content>ETCS aims to host a premier academic event for knowledge exchange in computer science, fostering collaboration among researchers worldwide.</Content>
+            <img src={conference} alt="" />
+            <DateLocation>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                <p>22-02-2025</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                <p>Coimbatore</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>4-5 per team</p>
+              </div>
+            </DateLocation>
+            <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "2rem" }}>Price Pool: $10,000</div>
+            <ActionBtn>
+              <button>Register Now</button>
+              <div style={{ display: "flex", width: "auto", height: "auto", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                  Learn More --&gt;
+                </Link>
+              </div>
+            </ActionBtn>
+          </Hclg>
+
+          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end", cursor: "pointer" }}>View All -&gt;</div>
+          <HcsmContainer>
+            <Hcsm style={{ backgroundColor: "#D8F3DC" }}>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>International Dev Meet</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>The International Dev Meet brings together developers from diverse backgrounds for networking and knowledge sharing</p>
+              <img src={codeScreen} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+            <Hcsm style={{ backgroundColor: "#D8F3DC" }}>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>International Dev Meet</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>The International Dev Meet brings together developers from diverse backgrounds for networking and knowledge sharing</p>
+              <img src={codeScreen} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+            <Hcsm style={{ backgroundColor: "#D8F3DC" }}>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>International Dev Meet</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>The International Dev Meet brings together developers from diverse backgrounds for networking and knowledge sharing</p>
+              <img src={codeScreen} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+          </HcsmContainer>
+        </HackContainer>
+      </>
+    );
+  };
+
+  const PaperPresentation = () => {
+    return (
+      <>
+        <p style={{ fontSize: "1.5rem", fontWeight: "700", marginLeft: "3rem", padding: "2rem", marginTop: "2rem" }}>Paper Presentation:</p>
+        <HackContainer>
+          <Hclg style={{ backgroundColor: "#CCDBFD" }}>
+            <h4>TechCraft</h4>
+            <Content>TechCraft invites engineering enthusiasts to showcase groundbreaking research and innovations in paper presentations, fostering collaboration and knowledge exchange.</Content>
+            <img src={paperPresentation} alt="" />
+            <DateLocation>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                <p>22-02-2025</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                <p>Coimbatore</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>4-5 per team</p>
+              </div>
+            </DateLocation>
+            <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "2rem" }}>Price Pool: $10,000</div>
+            <ActionBtn>
+              <button>Register Now</button>
+              <div style={{ display: "flex", width: "auto", height: "auto", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                  Learn More --&gt;
+                </Link>
+              </div>
+            </ActionBtn>
+          </Hclg>
+          <Hclg style={{ backgroundColor: "#CCDBFD" }}>
+            <h4>TechCraft</h4>
+            <Content>TechCraft invites engineering enthusiasts to showcase groundbreaking research and innovations in paper presentations, fostering collaboration and knowledge exchange.</Content>
+            <img src={paperPresentation} alt="" />
+            <DateLocation>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                <p>22-02-2025</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                <p>Coimbatore</p>
+              </div>
+              <div>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>4-5 per team</p>
+              </div>
+            </DateLocation>
+            <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "2rem" }}>Price Pool: $10,000</div>
+            <ActionBtn>
+              <button>Register Now</button>
+              <div style={{ display: "flex", width: "auto", height: "auto", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                  Learn More --&gt;
+                </Link>
+              </div>
+            </ActionBtn>
+          </Hclg>
+
+          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end", cursor: "pointer" }}>View All -&gt;</div>
+          <HcsmContainer>
+            <Hcsm style={{ backgroundColor: "#C2DBFF" }}>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>TechExpo</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>Showcase your research and innovation in the Paper Presentation event, where ideas transform into compelling presentations.</p>
+              <img src={FlowChart} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+            <Hcsm style={{ backgroundColor: "#C2DBFF" }}>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>TechExpo</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>Showcase your research and innovation in the Paper Presentation event, where ideas transform into compelling presentations.</p>
+              <img src={FlowChart} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+            <Hcsm style={{ backgroundColor: "#C2DBFF" }}>
+              <p style={{ fontSize: "1.5rem", fontWeight: "500", paddingTop: "1rem" }}>TechExpo</p>
+              <p style={{ paddingTop: "2rem", paddingLeft: "0.5rem", lineHeight: "1.5rem", fontSize: "1rem" }}>Showcase your research and innovation in the Paper Presentation event, where ideas transform into compelling presentations.</p>
+              <img src={FlowChart} alt="" />
+
+              <DateLocationSm>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Date:</p>
+                  <p>22-02-2025</p>
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Location:</p>
+                  <p>Visa Main,MDU</p>
+                </div>
+              </DateLocationSm>
+              <div style={{ marginLeft: "1rem" }}>
+                <p style={{ fontWeight: "bold", marginBottom: "0.61rem" }}>Member:</p>
+                <p>1-3 per team</p>
+              </div>
+              <div style={{ display: "flex", width: "10rem", height: "auto", backgroundColor: "#023047 ", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem", margin: "1rem", marginLeft: "1rem" }}>Price Pool: $10,000</div>
+              <ActionBtn style={{ display: "flex", flexDirection: "column", paddingLeft: "1rem" }}>
+                <div style={{ display: "flex", width: "8rem", backgroundColor: "#0096C7", color: "#fff", alignItems: "center", justifyContent: "center", borderRadius: "12px", padding: "0.65rem" }}>
+                  <Link to="/learnmore" style={{ textDecoration: "none", color: "inherit" }}>
+                    Learn More --&gt;
+                  </Link>
+                </div>
+                <button>Register Now</button>
+              </ActionBtn>
+            </Hcsm>
+          </HcsmContainer>
+        </HackContainer>
+      </>
+    );
+  };
+
+  const HackContainer = styled.div`
+    //position:relative;
+    margin-left: 10%;
+    padding: 0rem;
+  `;
+
+  const Hclg = styled.div`
+    position: relative;
+    width: 60rem;
+    // min-width:auto;
+    height: 24rem;
+    background-color: #caf0f8;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+    & h4 {
+      padding: 2rem;
+      font-size: 1.7rem;
+      font-weight: 600;
+    }
+    & img {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      height: 15rem;
+      width: 15rem;
+      padding: 3rem;
+    }
+  `;
+
+  const Content = styled.div`
+    width: 70%;
+    padding-left: 2rem;
+    font-size: 1.2rem;
+  `;
+
+  const DateLocation = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding: 2rem;
+    padding-bottom: 1rem;
+    gap: 2rem;
+  `;
+
+  const ActionBtn = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding-left: 2rem;
+
+    & button {
+      background-color: #0077b6;
+      color: #ffff;
+      width: 8rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+  `;
+
+  const HcsmContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    overflow-x: 10rem;
+  `;
+
+  const Hcsm = styled.div`
+    width: 22rem;
+    height: 30rem;
+    background-color: #90e0ef;
+    margin-top: 2rem;
+    border-radius: 16px;
+    padding: 1rem;
+    position: relative;
+    & img {
+      position: absolute;
+      bottom: 1rem;
+      right: 0.5rem;
+      width: 9rem;
+      height: 9rem;
+      opacity: 0.7;
+    }
+  `;
+
+  const DateLocationSm = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    padding-bottom: 1rem;
+    gap: 2rem;
+    padding-top: 2rem;
+  `;
+
+  //Main flow
   return (
     <>
-      <GlobalStyle />
       <Container>
-        <EventHeroBanner>Event Title</EventHeroBanner>
-        <Content>
-          <EventFlex>
-            <EventCard>
-              <EventCardImg src={EventCardImage} alt="EventCardImg" />
-              <EventCardContent>
-                <EventCardTitle>Hackfest 2024</EventCardTitle>
-                <EventCardT>
-                  <img src={bar_chart} alt="bar_chart" srcset="" />
-                  <EventCardD> Hack the solution </EventCardD>
-                </EventCardT>
-                <EventCardT>
-                  <img src={school} alt="school" srcset="" />
-                  <EventCardD>PSG Institute of Technology and Applied Research </EventCardD>
-                </EventCardT>
-                <EventCardT>
-                  <img src={logo_location} alt="logo_location" srcset="" />
-                  <EventCardD> PSG Institute of Technology and Applied Research, Neelambur, Tamil Nadu</EventCardD>
-                </EventCardT>
-              </EventCardContent>
-            </EventCard>
-            <EventStats>
-              <EventStatsTitle>
-                <Cost>Free</Cost>
-                <Register>
-                  <button>Register</button>
-                </Register>
-              </EventStatsTitle>
-              <StatContainer>
-                <Stats>
-                  <StatImg>
-                    <img src={logo_Registered} alt="registered" />
-                  </StatImg>
-                  <div style={{ marginLeft: "1rem" }}>
-                    <StatDetail>Registered</StatDetail>
-                    <StatCount>22</StatCount>
-                  </div>
-                </Stats>
-                <Stats>
-                  <StatImg>
-                    <img src={logo_time} alt="registered" />
-                  </StatImg>
-                  <div style={{ padding: "1rem" }}>
-                    <StatDetail>Registration Deadline</StatDetail>
-                    <StatCount>2 Days Left</StatCount>
-                  </div>
-                </Stats>
-                <Stats>
-                  <StatImg>
-                    <img src={logo_member} alt="registered" />
-                  </StatImg>
-                  <div style={{ padding: "1rem" }}>
-                    <StatDetail>Team Size</StatDetail>
-                    <StatCount>4-5 members</StatCount>
-                  </div>
-                </Stats>
-                <Stats>
-                  <StatImg>
-                    <img src={logo_eye} alt="registered" />
-                  </StatImg>
-                  <div style={{ padding: "1rem" }}>
-                    <StatDetail>Views</StatDetail>
-                    <StatCount>2,005</StatCount>
-                  </div>
-                </Stats>
-              </StatContainer>
-              <StatShare>
-                <ShareFlex>
-                  <ShareWishList>
-                    <button style={{ display: "flex", alignItems: "center", border: "none", borderRadius: "5px" }}>
-                      <img src={logo_heart} alt="Logo" style={{ marginRight: "5px" }} />
-                      Add to favourite
-                    </button>
-                  </ShareWishList>
-                  <ShareCalender>
-                    <button style={{ display: "flex", alignItems: "center", border: "none", borderRadius: "5px" }}>
-                      <img src={calendar} alt="Logo" style={{ marginRight: "5px" }} />
-                      Add to favourite
-                    </button>
-                  </ShareCalender>
-                </ShareFlex>
-                <ShareBtn>
-                  <button style={{ display: "flex", alignItems: "center", border: "none", borderRadius: "5px" }}>
-                    <img src={logo_shares} alt="Logo" style={{ marginRight: "5px" }} />
-                    Add to favourite
-                  </button>
-                </ShareBtn>
-              </StatShare>
-            </EventStats>
-          </EventFlex>
-
-          <EventDetailedData>
-            <p>
-              <strong>Description:</strong>
-            </p>
-            <p>Join us for Tech Hackathon 2024, an exciting two-day event bringing together innovative minds to solve real-world challenges through technology. Whether you're a seasoned developer, a budding entrepreneur, or a creative designer, this hackathon offers a unique opportunity to collaborate, create, and showcase your skills.</p>
-            <p>
-              <strong>Data and Time:</strong>
-            </p>
-            <p>
-             Saturday, April 20th, 2024 - Sunday, April 21st, 2024
-              <br />
-              9:00 AM - 6:00 PM (both days)
-            </p>
-            <p>
-              <strong>Registration:</strong>
-            </p>
-            <p>Registration is free and open to individuals and teams of up to four members. Simply register online through our website by April 15th, 2024, to secure your spot.</p>
-            <p>
-              <strong>Theme:</strong>
-            </p>
-            <p>This year's hackathon theme is "Building a Sustainable Future." Participants are encouraged to develop innovative solutions that address environmental challenges, promote sustainability, and drive positive social impact.</p>
-            <p>
-              <strong>Prize:</strong>
-            </p>
-            <p>Exciting prizes await the top teams, including cash rewards, mentorship opportunities, and access to incubation programs. Categories include Best Overall Hack, Most Innovative Solution, and Best User Experience.</p>
-            <p>
-              <strong>Judging Cretiria:</strong>
-            </p>
-            <p>Projects will be evaluated based on creativity, technical complexity, feasibility, and potential impact. Judges will comprise industry experts, entrepreneurs, and community leaders.</p>
-            <p>
-              <strong>Resources:</strong>
-            </p>
-            <p>Participants will have access to a variety of resources, including workshops, technical support, and exclusive access to sponsor APIs and datasets.</p>
-            <p>
-              <strong>Rules and Guidelines:</strong>
-            </p>
-            <p>Participants must adhere to the hackathon's code of conduct and ethical guidelines. Projects must be original and developed during the hackathon timeframe.</p>
-            <p>
-              <strong>Contact Information:</strong>
-            </p>
-            <p>For inquiries or support, please email [email address] or visit our website [website URL].</p>
-          </EventDetailedData>
-        </Content>
+        <FilterSidebar />
+        <div style={{ position: "relative" }}>
+          <SortBy>
+            <select style={{ border: "none" }}>
+              <option value="">Sort By</option>
+              <option value="recent">Recents</option>
+              <option value="fee">Cost</option>
+            </select>
+          </SortBy>
+          <Hackathon />
+          <Conference />
+          <PaperPresentation />
+        </div>
       </Container>
     </>
   );
 };
 
 const Container = styled.div`
-  //position: relative;
-`;
-
-const EventHeroBanner = styled.div`
-  height: 28rem;
-  width: 100%;
-  background-color: #e0e4e9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: bold;
-`;
-
-const Content = styled.div``;
-
-const EventFlex = styled.div`
+  padding: 20px;
   display: flex;
   flex-direction: row;
+  overflow-x: hidden;
 `;
-
-const EventCard = styled.div`
-  height: 16rem;
-  width: 55rem;
-  background-color: #f2f2f2;
-  margin-top: 3rem;
-  margin-left: 3rem;
-  margin-bottom: 3rem;
-  margin-right: 3rem;
-  padding: 2rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  border-radius: 8px;
-`;
-
-const EventCardImg = styled.img`
-  width: 7rem;
-  height: 7rem;
-  //background-color: #e0e4e9;
+const SortBy = styled.div`
   padding: 1rem;
-`;
-
-const EventCardContent = styled.div`
-  padding: 3rem;
-`;
-
-const EventCardTitle = styled.div`
-  font-weight: 600;
-  margin-bottom: 1rem;
-`;
-
-const EventCardT = styled.div`
   display: flex;
-  flex-direction: row;
-`;
-
-const EventCardD = styled.div`
-  padding: 0.5rem;
-`;
-
-const EventDetailedData = styled.div`
-  width: 55rem;
-  margin-left: 3rem;
-  margin-top: -30rem;
-  margin-bottom: 3rem;
-  background-color: #f2f2f2;
-  padding: 2rem;
-  border-radius: 8px;
-  line-height: 1.75rem;
-  p {
-    margin-top: 1rem;
-  }
-`;
-
-const EventStats = styled.div`
-  width: 23rem;
-  height: 100%;
-  margin-left: 2rem;
-  margin-top: 3rem;
-
-  //padding: 2rem;
-
-  margin-bottom: 10rem;
-`;
-
-const EventStatsTitle = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f2f2f2;
-  padding: 1rem;
-  border-radius: 8px 8px 0px 0px;
-  margin-bottom: 0.3rem;
-  button {
-    width: 7rem;
-    height: 3rem;
-    border-radius: 8px;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  right: 0px;
+  & select {
     border: none;
-    background-color: #0056b7;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    margin-left: 3rem;
-  }
-`;
-
-const Cost = styled.div`
-  font-weight: 600;
-`;
-
-const Register = styled.div``;
-
-const StatContainer = styled.div`
-  background-color: #f2f2f2;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  //align-items: center;
-`;
-
-const Stats = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: 1rem;
-  margin-top: 1rem;
-  line-height: 1.5rem;
-`;
-
-const StatImg = styled.div``;
-
-const StatDetail = styled.div`
-  opacity: 0.8;
-`;
-
-const StatCount = styled.div`
-  font-weight: 600;
-`;
-
-const StatShare = styled.div`
-  width: 23rem;
-  height: 100%;
-  margin-top: 0.2rem;
-  background-color: #f2f2f2;
-  padding: 2rem 0rem 2rem 0rem;
-  border-radius: 0 0 8px 8px;
-  //padding-right: 0rem;
-`;
-
-const ShareFlex = styled.div`
-  display: flex;
-  justify-content: space-around;
-  button {
-    padding: 1rem;
-    border: none;
-    background-color: #e0e4e9;
+    background-color: #d9d9d9;
+    padding: 0.25rem;
     border-radius: 8px;
-    align-items: center;
-    font-weight: 600;
   }
-`;
 
-const ShareWishList = styled.div``;
-
-const ShareCalender = styled.div``;
-
-const ShareBtn = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
-  button {
-    padding: 1rem;
-    border: none;
-    background-color: #e0e4e9;
-    border-radius: 8px;
-    align-items: center;
-    font-weight: 600;
+  & option{
+    background-color:#fff;
   }
 `;
 

@@ -1,10 +1,13 @@
 import styled from "styled-components";
-import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { selectUserName, selectUserPhoto, setSignOutState, setUserLoginDetails } from "../store/slices/UserSlice";
+import { selectUserName, selectUserPhoto, setSignOutState } from "../store/slices/UserSlice";
 import { useEffect, useState } from "react";
+import default_profile from "../Asserts/default_profile.svg";
+import {useCookies} from "react-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const Header = () => {
   const dispactch = useDispatch();
@@ -12,25 +15,32 @@ const Header = () => {
   const userName = useSelector(selectUserName);
   const userPhoto = useSelector(selectUserPhoto);
   const [scrollPos, setScrollPos] = useState(0);
+  const [showGreet,setShowGreet]=useState(true);
+    //const history=useNavigate();
+  const[cookies,setCookies,removeCookies]=useCookies([]);
 
-  const setUser = (user) => {
-    dispactch(
-      setUserLoginDetails({
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-      })
-    );
-  };
-
-  useEffect(() => {
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUser(user);
-        history("/home");
+  useEffect(()=>{
+    const verifyUser=async()=>{
+      {
+        const {data}= await axios.post(
+          "http://localhost:4000",
+          {},
+          {withCredentials:true}
+        );
+        if(!data.status){
+            removeCookies("jwt");
+            history("/signup");
+        }
+        else{
+          if(showGreet){
+              if(cookies!=null){ toast(`HI ${data.user}`);};
+              setShowGreet(false);
+            }
+        }
       }
-    });
-  }, [userName]);
+    }
+    verifyUser();
+  },[cookies,history,removeCookies]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,36 +54,25 @@ const Header = () => {
   }, []);
 
   const handleAuth = () => {
-    if (!userName) {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          setUser(result.user);
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-    } else if (userName) {
       auth
         .signOut()
         .then(() => {
           dispactch(setSignOutState());
-          history("/");
+          removeCookies("jwt");
+          history("/signup");
         })
         .catch((error) => {
+          
           alert(error.message);
         });
-    }
   };
 
   return (
-    <Nav hide={scrollPos < 0}>
+    <>
+    <Nav>
       {/* <Logo>
         <img src="" alt="" srcset="" />
       </Logo> */}
-
-      {!userName ? (
-        <Login onClick={handleAuth}>Login</Login>
-      ) : (
         <>
           <NavMenu>
             <Link to="/home">
@@ -96,20 +95,24 @@ const Header = () => {
             </Link>
           </NavMenu>
           <LogOut>
-            <UserImg src={userPhoto} alt={userName} />
+              {userPhoto ? (
+                <UserImg src={userPhoto} alt={userName} />
+              ) : (
+                <UserImg src={default_profile} alt="Default User" />
+              )}
             <DropDown>
               <span onClick={handleAuth}>LogOut</span>
             </DropDown>
           </LogOut>
         </>
-      )}
+      
     </Nav>
+    <ToastContainer/>
+    </>
   );
 };
 
 const Nav = styled.nav`
-  position: sticky; /* Set position to sticky */
-  top: ${(props) => (props.hide ? "-60px" : "0")}; 
   left: 0;
   right: 0;
   height: 60px;
@@ -211,6 +214,7 @@ const DropDown = styled.div`
   font-size: 14px;
   letter-spacing: 3px;
   opacity: 0;
+  z-index:9999;
 `;
 
 const LogOut = styled.div`

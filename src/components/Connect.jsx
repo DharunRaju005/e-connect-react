@@ -1,8 +1,11 @@
 import React from 'react'
+import Header from './Header';
 
 const Connect = () => {
   return (
-    <div>Connect+</div>
+    <>
+      <div>Connect+</div>
+    </>
   )
 }
 

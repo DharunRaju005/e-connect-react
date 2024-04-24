@@ -9,11 +9,10 @@ import { selectUserName } from "../store/slices/UserSlice";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-  const userName = useSelector(selectUserName);
+  
 
   return (
     <>
-      {userName ? (
         <Container >
           <FooterImg>
             <img src={FooterImgSrc} alt={"FooterImg"} />
@@ -57,9 +56,7 @@ const Footer = () => {
             </Anchors>
           </Socials>
         </Container>
-      ) : (
-        <></>
-      )}
+      
     </>
   );
 };
@@ -123,7 +120,8 @@ const Socials = styled.div`
 `;
 
 const SHeader = styled.h4`
-  margin-left: -1rem;
+  margin-left: -2rem;
+  padding:1rem;
 `;
 
 const Anchors = styled.div`
