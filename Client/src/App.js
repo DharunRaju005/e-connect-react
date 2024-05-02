@@ -14,6 +14,7 @@ import SignUp from "./components/SignUp";
 import { useState,useEffect } from "react";
 import "react-toastify/ReactToastify.css"
 import Register from "./components/Register"
+import Profile from './components/profile';
 
 
 function App() {
@@ -41,6 +42,8 @@ function App() {
         <Route exact path="/clubs" element={<Clubs />} />
         <Route exact path="/connect" element={<Connect />} />
         <Route exact path="/aboutus" element={<AboutUs />} />
+        <Route exact path="/profile" element={<Profile />} />
+
         <Route exact path="/register" element={<Register />} />
       </Routes>
       {showFooter && <Footer /> }

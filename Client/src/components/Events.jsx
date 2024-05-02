@@ -707,7 +707,6 @@ const Events = () => {
     display: flex;
     flex-direction: row;
     gap: 2rem;
-    overflow-x: 10rem;
   `;
 
   const Hcsm = styled.div`

@@ -8,19 +8,9 @@ const Home = () => {
   return (
     <Container>
       <HeaderContainer>
-        <SubHeader>
-          <SubHeaderTextWrapper>
-            <SubHeaderText>STUDENTS</SubHeaderText>
-            <SubHeaderTextRegular>e-connect</SubHeaderTextRegular>
-          </SubHeaderTextWrapper>
-          <UserInfo>
-            <UserName><BoldText>Naveen Kumar (Logged in)</BoldText></UserName>
-            <DateInfo><BoldText>Date: April 30, 2024</BoldText></DateInfo>
-          </UserInfo>
-        </SubHeader>
         <ContentWrapper>
           <ImageContainer>
-            <img src={myImage} alt="Description of your image" />
+            <img src={myImage} alt="Description" />
           </ImageContainer>
           <DescriptionContainer>
             <DescriptionText>
@@ -76,7 +66,7 @@ const Home = () => {
         <FavoriteEventsTitle>Favorite Events</FavoriteEventsTitle>
         <EventsGrid>
           <EventCard>
-            <EventImage src={eventImage1} alt="Event Image" />
+            <EventImage src={myImage} alt="Event Image" />
             <EventName>PSG Hackathon for Men</EventName>
             <LearnMoreButton to="/learnmore">Learn more</LearnMoreButton>
           </EventCard>
@@ -103,49 +93,7 @@ const HeaderContainer = styled.div`
   margin-bottom: 40px;
 `;
 
-const SubHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #e0e0e0;
-  width: 100%;
-  padding: 20px;
-`;
 
-const SubHeaderTextWrapper = styled.div`
-  display: flex;
-  align-items: baseline;
-`;
-
-const SubHeaderText = styled.h3`
-  margin: 0;
-  font-size: 48px;
-  padding: 10px;
-  font-family: 'Oswald', sans-serif;
-`;
-
-const SubHeaderTextRegular = styled(SubHeaderText)`
-  font-weight: normal;
-  margin-left: -8px;
-`;
-
-const UserInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`;
-
-const UserName = styled.span`
-  font-size: 24px;
-`;
-
-const DateInfo = styled.span`
-  font-size: 20px;
-`;
-
-const BoldText = styled.span`
-  font-weight: bold;
-`;
 
 const ContentWrapper = styled.div`
   display: flex;

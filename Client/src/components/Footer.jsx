@@ -9,7 +9,6 @@ import { selectUserName } from "../store/slices/UserSlice";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-  
 
   return (
     <>
