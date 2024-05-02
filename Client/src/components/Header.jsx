@@ -93,6 +93,9 @@ const Header = () => {
             <Link to="/aboutus">
               <span>About Us</span>
             </Link>
+            <Link to="/profile">
+              <span>Profile</span>
+            </Link>
           </NavMenu>
           <LogOut>
               {userPhoto ? (
@@ -105,7 +108,6 @@ const Header = () => {
             </DropDown>
           </LogOut>
         </>
-      
     </Nav>
     <ToastContainer/>
     </>
