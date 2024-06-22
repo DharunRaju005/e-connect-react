@@ -1,7 +1,7 @@
 
 # Student E-Connect
 
-An application that helps students to socialize, register for events & hackathons, and to join a club and collaborate with other members of the club.
+An application that helps students to socialize, register for events & hackathons, and to join a club and collaborate with other members of the club or between other clubs.
 
 [STILL IN DEVELOPMENT STAGE]
 
