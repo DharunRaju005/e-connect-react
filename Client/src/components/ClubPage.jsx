@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const ClubPage = () => {
 
     const [isFollowed, setFollowed] = useState(false);
-    const [myClub, setMyClub] = useState(false);
+    const [myClub, setMyClub] = useState(true);
     const [isEditOpen, setEditOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState("Announcements");
     
@@ -216,13 +216,14 @@ const ClubPage = () => {
 
 ///////////////////////////////////////////////////////////////////////////
 
-const AnnouncementAndEditClub = () => {
+export const AnnouncementAndEditClub = () => {
   const [announcement, setAnnouncement] = useState('');
   const [clubDetails, setClubDetails] = useState({
     name: '',
     clubId: '',
     about: '',
-    contact: ''
+    contact: '',
+    logo:null
   });
 
   const handleAnnouncementSubmit = (e) => {
@@ -323,6 +324,14 @@ const AnnouncementAndEditClub = () => {
               style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd', fontSize: '16px' }}
             />
           </div>
+          <div>
+            <label htmlFor="logo" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Upload Club logo:</label>
+            <input
+            type='file'
+            id="logo"
+            style={{ width: '80%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }}
+            />
+        </div>
           <button
             type="submit"
             style={{ padding: '10px 20px', backgroundColor: 'green', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '16px' }}
