@@ -2,20 +2,8 @@ import React from 'react'
 import img from "../Asserts/psgitech.png";
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom';
-import { AnnouncementAndEditClub } from './ClubPage';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 
-const ClubsHome = () => {
-
-    const [clubDetails, setClubDetails] = useState({
-        name: '',
-        clubId: '',
-        about: '',
-        contact: '',
-        logo:null
-      });
-    
-    const [createClub, setCreateClub] = useState(false);
 
     const BodyContainer = styled.div`
         display: flex;
@@ -43,6 +31,7 @@ const ClubsHome = () => {
         padding:32px 48px;
         border :  1px solid #c4c4c4;
         justify-content : center;
+        width: 200px;
     `;
     
     const clubIcon ={
@@ -58,6 +47,77 @@ const ClubsHome = () => {
         color : white;
         border : 1px solid transparent; 
     `;
+
+    const PageSelector = styled.div`
+        display : flex;
+        flex-direction : row;
+        gap : 24px;
+        padding:16px 48px;
+        min-width : 100%;
+        justify-content: center;
+        margin-left: -48px;
+    
+    `;
+
+    const Selectors = styled.button`
+        background :#f3f3f3;
+        border : 1px solid transparent;
+        padding : 8px 24px;
+        font-size:16px;
+        border-radius : 32px;
+    `;
+
+const ClubsHome = () => {
+
+    const [clubDetails, setClubDetails] = useState({
+        name: '',
+        clubId: '',
+        about:'',
+        contact:'',
+        logo:null
+      });
+
+
+
+      const [clubs, setClubs] = useState([]);
+      const [loading, setLoading] = useState(true); 
+      const [error, setError] = useState(null);  
+
+      const [query, setQuery] = useState("");
+      const [type, setType] =  useState("");
+    
+      const [createClub, setCreateClub] = useState(false);
+
+      /////////////////////////////////////////////////////////////////
+
+
+      useEffect(() => {
+        const fetchClubs = async () => {
+          let url = 'http://localhost:8000/api/clubs'+type;
+          if(query!=""){
+            url = url + "?name=" +query;
+          }
+          try {
+            const response = await fetch(url);  
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const data = await response.json(); 
+            setClubs(data); 
+          } catch (error) {
+            setError(error.message); 
+          } finally {
+            setLoading(false); 
+          }
+        };
+    
+        fetchClubs();
+      }, [query,createClub, type]);  
+
+
+      
+      /////////////////////////////////////////////////////////////////
+    
 
     const navigate = useNavigate();
 
@@ -75,22 +135,67 @@ const ClubsHome = () => {
 
   const handleClubDetailsSubmit = (e) => {
     e.preventDefault();
-    alert(`Club details updated: ${JSON.stringify(clubDetails)}`);
+    const postClub = async () => {
+      const url = 'http://localhost:8000/api/clubs';
+      
+      setLoading(true);
+    
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(clubDetails),
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Network response was not ok');
+        }
+        const data = await response.json();
+        alert(clubDetails);
+        setError(null);
+      } catch (error) {
+        setError(error.message);
+        alert(error.message);
+      } finally {
+        setLoading(false);
+        alert(loading);
+      }
+    };
+    postClub();
+    
   };
 
   return (
     <>
       <BodyContainer>
       {!createClub&&<h1>Clubs</h1>}
-        {!createClub&&<div style={{display:"flex", flexDirection:"row", gap:"12px"}}>
-            <input
-              type='text'
-              id="announcement"
-              placeholder='Search clubs'
-              style={{ width: '400px', padding: '12px 24px', border: '1px solid #ddd', fontSize: '16px' }}
-            />
-            <Button style={{padding:"12px 24px"}} type='submit'>Search</Button>
-          </div>}
+      
+  {!createClub && (
+    <div style={{ display: "flex", flexDirection: "row", gap: "12px" }}>
+      <input
+        type='text'
+        id="announcement"
+        placeholder='Search clubs'
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ width: '400px', padding: '12px 24px', border: '1px solid #ddd', fontSize: '16px' }}
+      />
+      <button
+        type='button' // Change to 'submit' if inside a form and needed
+        style={{ padding: "12px 24px", border: 'none', backgroundColor: 'green', color: '#fff', cursor: 'pointer' }}
+        onClick={() => {
+          // Optional: Add your search logic here
+          console.log('Search clicked with query:', query);
+        }}
+      >
+        Search
+      </button>
+    </div>
+  )}
+  
           {!createClub&& <div style={{display:"flex", flexDirection:"row"}}> 
             <p style={{alignSelf:"center", marginRight:"12px"}}>Or create your own...</p>
             <Button onClick={()=>setCreateClub(true)}>Create new club</Button>
@@ -164,16 +269,33 @@ const ClubsHome = () => {
         </form>
       </div>}
           <hr style={{border:"1px solid black"}}/>
-          {!createClub&&<p style={{fontSize:"20px", fontWeight:"400"}}>Showing all clubs :</p>}
-          {!createClub&&<ClubItems>
-            {Array(15).fill(null).map((_, index) => (
-            <ClubItem>
-                <img src={img} style={clubIcon}/>
-                <h3 style={{textAlign:"center"}}>PSG iTech club</h3>
-                <Button onClick={() => handleLearnMore(index + 1)}>Learn More</Button>
-            </ClubItem>
-            ))}
-        </ClubItems>}
+          
+          <PageSelector>
+                <Selectors  onClick={() => setType("")}  style={type=="" ? {background : "green", color : "white"} : {}}>All Clubs</Selectors>
+                <Selectors  onClick={() => setType("/myclubs")} style={type=="/myclubs" ? {background : "green", color : "white"} : {}}>My Clubs</Selectors>
+                <Selectors  onClick={() => setType("/following")} style={type=="/following" ? {background : "green", color : "white"} : {}}>Following</Selectors>
+            </PageSelector>
+          {!createClub && (
+  <ClubItems>
+    {loading ? (
+      <p>Loading...</p>
+    ) : error ? (
+      <p>Error: {error}</p>
+    ) : clubs.length > 0 ? (
+      clubs.map((club) => (
+        <ClubItem key={club._id}>
+          <img src={img} style={clubIcon} alt={`${club.clubName} logo`} />
+          <h3 style={{ textAlign: "center" }}>{club.clubName}</h3>
+          <p style={{ textAlign: "center" }}>@{club.clubId}</p>
+          <Button onClick={() => handleLearnMore(club.clubId)}>Learn More</Button>
+        </ClubItem>
+      ))
+    ) : (
+      <p>No clubs found</p>
+    )}
+  </ClubItems>
+)}
+
       </BodyContainer>
     </>
   )

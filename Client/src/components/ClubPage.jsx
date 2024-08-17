@@ -1,27 +1,159 @@
-import React, { useState } from 'react'
-import Header from './Header'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useParams} from 'react-router-dom'
+import { format, parseISO } from 'date-fns';
+
 const ClubPage = () => {
 
     const [isFollowed, setFollowed] = useState(false);
-    const [myClub, setMyClub] = useState(true);
+    const [myClub, setMyClub] = useState(false);
     const [isEditOpen, setEditOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState("Announcements");
-    
-    const location = useLocation();
+    const [changes, setchanges] = useState(0);
+    const [club, setClub] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [reload, setReload] = useState(0);
+ 
+    const { clubId } = useParams();
     const navigate = useNavigate();
 
-  const handleLearnMore = (id) => {
-    navigate(`/events/${id}`);
+    const handleLearnMore = (id) => {
+      navigate(`/events/${id}`);
+    };
+
+
+    const reportSpam = async (clubId) => {
+      if (!clubId) {
+          alert('Club ID is required');
+          return;
+      }
+
+      try {
+          const response = await fetch('http://localhost:8000/api/clubs/report-spam', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ clubId }),
+          });
+
+          const data = await response.json();
+          if (data.message === 'Club priority updated and clubs sorted') {
+              alert('Club reported as spam successfully.');
+          } else {
+              alert(data.message);
+          }
+      } catch (error) {
+          console.error('Error reporting spam:', error);
+          alert('Error reporting spam');
+      }
   };
 
-    const HandleFollow = () => {
-        if(myClub) {setEditOpen(true);}
-        else{
-            setFollowed(!isFollowed);
+    ////////////////////////////////////
+
+    useEffect(() => {
+      const checkFollowingStatus = async () => {
+          try {
+              const response = await fetch(`http://localhost:8000/api/clubs/follow-status?clubId=${clubId}`);
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              const data = await response.json();
+              setFollowed(data.isFollowing);
+          } catch (error) {
+              console.error('Error fetching follow status', error);
+          }
+      };
+
+      checkFollowingStatus();
+  }, [clubId, reload]);
+
+
+  const handleFollowToggle = async () => {
+    if(myClub) 
+    {setEditOpen(true);
+    return;}
+    const _id = club.clubId;
+    try {
+        const endpoint = isFollowed
+            ? `http://localhost:8000/api/clubs/unfollow?clubId=${_id}`
+            : `http://localhost:8000/api/clubs/follow?clubId=${_id}`;
+        
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+
+        setReload((reload+1)%2);
+    } catch (error) {
+        console.error('Error while following/unfollowing', error);
     }
+};
+
+    useEffect(() => {
+      const fetchClubDetails = async () => {
+        try {
+          const response = await fetch(`http://localhost:8000/api/clubs/${clubId}/get`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setClub(data);
+          
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchClubDetails();
+      
+    }, [clubId, changes]);
+
+
+    useEffect(() => {
+      if (club) {
+          setMyClub(club.admin === "me");
+      } else {
+          setMyClub(false);
+      }
+  }, [club]);
+
+
+    const deleteAnnouncement = async (clubId, aid) => {
+      const confirmed = window.confirm('Are you sure you want to delete this announcement?');
+      if(!confirmed) return;
+      try {
+          const response = await fetch(`http://localhost:8000/api/clubs/announcement?clubId=${clubId}&aid=${aid}`, {
+              method: 'DELETE',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+  
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Failed to delete announcement');
+          }
+  
+          const data = await response.json();
+          setchanges((changes+1)%2);
+      } catch (error) {
+          alert('Error deleting announcement:', error.message);
+      }
+  };
+
+
+  
+    ////////////////////////////////////
 
     const ClubPageContainer = styled.div`
         display: flex;
@@ -114,11 +246,12 @@ const ClubPage = () => {
 
     const AnnouncementCard = styled.div`
         display : flex;
-        flex-direction : column;
+        flex-direction : row;
         gap : 24px;
         background :  #fdfdfd;
         padding:32px 48px;
         border :  1px solid #c4c4c4;
+        justify-content: space-between;
         min-width : 40%;
     `;
 
@@ -155,7 +288,8 @@ const ClubPage = () => {
 
   return (
     <ClubPageContainer>
-        {!isEditOpen && <ClubHeader>
+      <Button onClick={()=>navigate('/clubs')} style={{background:"grey"}}>Back to Clubs Home</Button>
+        {!isEditOpen  && !loading && !error && <ClubHeader>
             <ClubLogo>
                 <img
                   width="84px"
@@ -165,71 +299,108 @@ const ClubPage = () => {
                   alt="avatar"
                 />
                 <div style={{display :"flex", flexDirection:"column", gap : "12px"}}>
-                    <h2>Coding club</h2>
-                    <p>@COD123</p>
+                    <h2>{club.clubName}</h2>
+                    <p>@{club.clubId}</p>
                 </div>
             </ClubLogo>
             <ClubActions>
-                <Button style={isFollowed? {background:"white", color:"green", borderColor:"green"}:{}} onClick={HandleFollow}>{myClub? "Edit" : isFollowed ? "Unfollow": " Follow "}</Button>
-                {!myClub && <Button style={{background:"white", color:"red", borderColor:"red"}} onClick={()=>alert("reported")}>Report Spam</Button>}
+                <Button style={isFollowed? {background:"white", color:"green", borderColor:"green"}:{}} onClick={handleFollowToggle}>{myClub? "Edit" : isFollowed ? "Unfollow": " Follow "}</Button>
+                {!myClub && <Button style={{background:"white", color:"red", borderColor:"red"}} onClick={()=>reportSpam(club.clubId)}>Report Spam</Button>}
             </ClubActions>
         </ClubHeader>}
-        {!isEditOpen && <ClubBody>
+        {!isEditOpen  && !loading && !error && <ClubBody>
             <PageSelector>
                 <Selectors  onClick={() => setCurrentPage("Announcements")}  style={currentPage=="Announcements" ? {background : "green", color : "white"} : {}}>Announcements</Selectors>
                 <Selectors  onClick={() => setCurrentPage("Events")} style={currentPage=="Events" ? {background : "green", color : "white"} : {}}>Events</Selectors>
                 <Selectors  onClick={() => setCurrentPage("About")} style={currentPage=="About" ? {background : "green", color : "white"} : {}}>About</Selectors>
             </PageSelector>
             { currentPage=="Announcements"  && <Announcements>
-            {Array(15).fill(null).map((_, index) => (
+            {club.announcements.length === 0 && <p>No contents here</p>}
+            {club.announcements.length !== 0 && club.announcements.map((x, index) => (
                 <AnnouncementCard>
-                    <h3>Annoucement example</h3>
-                    <p style={{fontSize : "14px", color:"#747474"}}>13 AUG 2024 - 4.30 PM</p>
+                   <div style={{display:"flex", flexDirection:"column", gap : "24px"}}>
+                           <h3>{x.text}</h3>
+                           <p style={{fontSize : "14px", color:"#747474"}}>{format(parseISO(x.date), "dd MMM yyyy - hh:mm a").toUpperCase()}</p>
+                    </div>
+                   { myClub && <Button onClick={()=> deleteAnnouncement(club.clubId,x.aid)} style={{alignSelf:"center", background:"white", border:"1px solid red"}}><svg height={"24px"} width={"24px"} fill='red' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" /></svg></Button>}
                 </AnnouncementCard>
             ))}
             </Announcements> }
             {currentPage=="Events" && <Events>
-                {Array(15).fill(null).map((_, index) => (
+              {club.events.length === 0 && <p>No contents here</p>}
+            {club.events.length !== 0 && club.events.map((x, index)=> (
                     <EventCard>
                         <div style={{display:"flex", flexDirection:"column", gap : "24px"}}>
-                           <h3>Event title</h3>
-                           <p style={{fontSize : "14px", color:"#747474"}}>12 OCT 2024 - Competition</p>
+                           <h3>{x.name}</h3>
+                           <p style={{fontSize : "14px", color:"#747474"}}>{format(parseISO(x.date), "dd MMM yyyy - hh:mm a").toUpperCase()} | {x.type}</p>
                         </div>
                         <Button onClick={()=> handleLearnMore(index)} style={{alignSelf:"center", maxHeight:"48px"}}>Learn More</Button>
                     </EventCard>
                 ))}
             </Events>}
             {currentPage=="About" && <About>
-                <h2>Welcome to Coding Club</h2>
-                <p style={{textAlign:'justify', margin:"12px", alignItems:"center", maxWidth : "50%"}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                <Button style={{background : "#777777"}}>Contact us</Button>
+                <h2>Welcome to {club.clubName}</h2>
+                <p style={{textAlign:'justify', margin:"12px", alignItems:"center", maxWidth : "50%"}}>{club.about}</p>
+                <Button style={{background : "#777777"}}>{club.contact}</Button>
                 
             </About>}
         </ClubBody>}
-        {isEditOpen && <div>
+        {isEditOpen && !loading && !error && <div>
                 <Button onClick={()=>setEditOpen(false)} style={{background:"grey", marginBottom:"48px"}}>back</Button>
-        <AnnouncementAndEditClub/>
+        <AnnouncementAndEditClub club={club} changes={changes} setchanges={setchanges}/>
             </div>}
+          {loading && <h2>Loading...</h2>}
+          {error && <h2>Error</h2>}
     </ClubPageContainer>
   )
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-export const AnnouncementAndEditClub = () => {
+export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
   const [announcement, setAnnouncement] = useState('');
   const [clubDetails, setClubDetails] = useState({
-    name: '',
-    clubId: '',
-    about: '',
-    contact: '',
+    name: club.clubName,
+    clubId: club.clubId,
+    about: club.about,
+    contact: club.contact,
     logo:null
   });
 
   const handleAnnouncementSubmit = (e) => {
+    const confirmedSubmission = window.confirm('Are you sure you want to post this announcement?');
+    if(confirmedSubmission){
     e.preventDefault();
-    alert(`Announcement submitted: ${announcement}`);
+    if(announcement=="" || announcement == " "){
+      alert("Cannot post empty message");
+      return;
+    }
+    const postAnnouncement = async (clubId, text) => {
+      try {
+        const response = await fetch('http://localhost:8000/api/clubs/announcement', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ clubId, text })
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+    
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.error('Error posting announcement:', error);
+        throw error;
+      }
+    };
+    postAnnouncement(club.clubId,announcement);    
     setAnnouncement('');
+    setchanges((changes+1)%2);
+  }
+
   };
 
   const handleClubDetailsChange = (e) => {
@@ -242,7 +413,33 @@ export const AnnouncementAndEditClub = () => {
 
   const handleClubDetailsSubmit = (e) => {
     e.preventDefault();
-    alert(`Club details updated: ${JSON.stringify(clubDetails)}`);
+    const confirmedSubmission = window.confirm('Are you sure you want to update this club details?');
+    if(confirmedSubmission){
+      const updateClubDetails = async (clubDetails) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/clubs/${club.clubId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(clubDetails),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const data = await response.json();
+            console.log('Club updated successfully:', data);
+            // Handle success (e.g., update local state or notify the user)
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    };
+    updateClubDetails(clubDetails);
+    setchanges((changes+1)%2);
+    }
+    else{return;}
   };
 
   return (
@@ -255,6 +452,7 @@ export const AnnouncementAndEditClub = () => {
             <textarea
               id="announcement"
               value={announcement}
+              placeholder='Enter announcement here...'
               onChange={(e) => setAnnouncement(e.target.value)}
               rows="4"
               cols="50"
