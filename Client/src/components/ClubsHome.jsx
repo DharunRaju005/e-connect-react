@@ -34,12 +34,15 @@ import { useState, useEffect} from 'react';
         width: 200px;
     `;
     
-    const clubIcon ={
-        width : "100%",
-        maxWidth : "100px",
-        height : "128px",
-        alignSelf : "center"
-    }
+    const clubIcon = {
+      width: '100px', 
+      height: '128px', 
+      objectFit: 'cover',
+      display: 'block',
+      margin: '0 auto',
+      borderRadius: '8px'
+    };
+    
 
     const Button = styled.button`
         padding: 8px 16px;
@@ -74,11 +77,10 @@ const ClubsHome = () => {
         clubId: '',
         about:'',
         contact:'',
-        logo:null
       });
 
 
-
+      const [clubIdforLogo,setClubIdForLogo] = useState(-1);
       const [clubs, setClubs] = useState([]);
       const [loading, setLoading] = useState(true); 
       const [error, setError] = useState(null);  
@@ -87,6 +89,7 @@ const ClubsHome = () => {
       const [type, setType] =  useState("");
     
       const [createClub, setCreateClub] = useState(false);
+      const [logoImage, setLogoImage] = useState(null);
 
       /////////////////////////////////////////////////////////////////
 
@@ -125,6 +128,46 @@ const ClubsHome = () => {
     navigate(`/clubs/${id}`);
   };
 
+  const handleFileChange = (e) => {
+    setLogoImage(e.target.files[0]);
+  };
+
+  const uploadLogo = async () => {
+    let x = 0;
+    if (!logoImage || clubIdforLogo==-1) {
+      alert('Please select a file and provide a club ID.');
+      return x;
+    }
+
+    const formData = new FormData();
+    formData.append('logo', logoImage);
+    formData.append('clubId', clubIdforLogo);
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/clubs/logo`, {
+        method: 'PUT',
+        body: formData,
+        headers: {
+          
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error uploading logo.');
+      }
+
+      alert('Logo uploaded successfully!');
+      x=1;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Error uploading logo.');
+      x = 2;
+    }
+    setClubIdForLogo(-1);
+    return x;
+  };
+
+
   const handleClubDetailsChange = (e) => {
     const { name, value } = e.target;
     setClubDetails(prevDetails => ({
@@ -133,11 +176,16 @@ const ClubsHome = () => {
     }));
   };
 
-  const handleClubDetailsSubmit = (e) => {
+  const getPlaceholderText = () => {
+    if (type === "") return "all clubs";
+    if (type === "/myclubs") return "my clubs";
+    return "following clubs";
+  };
+
+  const handleClubDetailsSubmit = async (e) => {
     e.preventDefault();
     const postClub = async () => {
       const url = 'http://localhost:8000/api/clubs';
-      
       setLoading(true);
     
       try {
@@ -148,24 +196,25 @@ const ClubsHome = () => {
           },
           body: JSON.stringify(clubDetails),
         });
-    
+        
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || 'Network response was not ok');
         }
         const data = await response.json();
-        alert(clubDetails);
         setError(null);
+        
       } catch (error) {
         setError(error.message);
-        alert(error.message);
       } finally {
         setLoading(false);
-        alert(loading);
       }
     };
-    postClub();
-    
+    const y = await uploadLogo();
+    console.log(y);
+    if(y==1){
+      postClub();
+    } 
   };
 
   return (
@@ -174,11 +223,12 @@ const ClubsHome = () => {
       {!createClub&&<h1>Clubs</h1>}
       
   {!createClub && (
+    
     <div style={{ display: "flex", flexDirection: "row", gap: "12px" }}>
       <input
         type='text'
         id="announcement"
-        placeholder='Search clubs'
+        placeholder={`Search ${getPlaceholderText()}`}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         style={{ width: '400px', padding: '12px 24px', border: '1px solid #ddd', fontSize: '16px' }}
@@ -223,10 +273,14 @@ const ClubsHome = () => {
               type="text"
               name="clubId"
               value={clubDetails.clubId}
-              onChange={handleClubDetailsChange}
+              onChange={(e) => {
+                setClubIdForLogo(e.target.value);
+                handleClubDetailsChange(e);
+              }}
               required
               style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd', fontSize: '16px' }}
             />
+
           </div>
           <div>
             <label htmlFor="about" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>About:</label>
@@ -257,6 +311,7 @@ const ClubsHome = () => {
             <input
             type='file'
             id="logo"
+            onChange={handleFileChange}
             style={{ width: '80%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }}
             />
         </div>
@@ -270,11 +325,13 @@ const ClubsHome = () => {
       </div>}
           <hr style={{border:"1px solid black"}}/>
           
-          <PageSelector>
+         { !createClub &&
+            <PageSelector>
                 <Selectors  onClick={() => setType("")}  style={type=="" ? {background : "green", color : "white"} : {}}>All Clubs</Selectors>
                 <Selectors  onClick={() => setType("/myclubs")} style={type=="/myclubs" ? {background : "green", color : "white"} : {}}>My Clubs</Selectors>
                 <Selectors  onClick={() => setType("/following")} style={type=="/following" ? {background : "green", color : "white"} : {}}>Following</Selectors>
             </PageSelector>
+          }
           {!createClub && (
   <ClubItems>
     {loading ? (
@@ -284,7 +341,7 @@ const ClubsHome = () => {
     ) : clubs.length > 0 ? (
       clubs.map((club) => (
         <ClubItem key={club._id}>
-          <img src={img} style={clubIcon} alt={`${club.clubName} logo`} />
+          <img src={`http://localhost:8000/api/clubs/logo/${club.clubId}`} style={clubIcon} alt={`${club.clubName} logo`} />
           <h3 style={{ textAlign: "center" }}>{club.clubName}</h3>
           <p style={{ textAlign: "center" }}>@{club.clubId}</p>
           <Button onClick={() => handleLearnMore(club.clubId)}>Learn More</Button>

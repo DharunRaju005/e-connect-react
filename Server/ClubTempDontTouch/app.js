@@ -1,3 +1,11 @@
+const mongoose = require('mongoose');
+
+const mongoUri = "mongodb+srv://sanhector:%23Q%40C8xsvZHYiE%21E@clubs-ec.bjbn2.mongodb.net/?retryWrites=true&w=majority&appName=Clubs-EC";
+
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected...'))
+  .catch(err => console.log(err));
+
 const express = require('express');
 const cors = require('cors'); 
 const app = express();
@@ -12,324 +20,300 @@ app.use(express.json());
 
 //---------------------------------------------------//
 
-var followingClubs = ["foodies-club-005","music-lovers-004"];
-var myClubs = ["book-club-001","tech-enthusiasts-002"];
-
-var clubs = [
-  {
-    _id: '1',
-    clubName: 'Book Club',
-    clubId: 'book-club-001',
-    logo: 'http://example.com/logo1.png',
-    priority: 0
-  },
-  {
-    _id: '2',
-    clubName: 'Tech Enthusiasts',
-    clubId: 'tech-enthusiasts-002',
-    logo: 'http://example.com/logo2.png',
-    priority: 0
-  },
-  {
-    _id: '3',
-    clubName: 'Art Society',
-    clubId: 'art-society-003',
-    logo: 'http://example.com/logo3.png',
-    priority: 0
-  },
-  {
-    _id: '4',
-    clubName: 'Music Lovers',
-    clubId: 'music-lovers-004',
-    logo: 'http://example.com/logo4.png',
-    priority: 0
-  },
-  {
-    _id: '5',
-    clubName: 'Foodies Club',
-    clubId: 'foodies-club-005',
-    logo: 'http://example.com/logo5.png',
-    priority: 0
-  }
-];
-
-
-var clubsAdv = [
-    {
-      _id: '1',
-      clubName: 'Book Club',
-      clubId: 'book-club-001',
-      logo: 'http://example.com/logo1.png',
-      announcements: [
-        { aid:"1",text: 'Monthly meeting scheduled.', date: new Date('2024-09-10T14:00:00Z') },
-        { aid:"2",text: 'Book drive next week.', date: new Date('2024-09-17T10:00:00Z') }
-      ],
-      events: [
-        { name: 'Book Reading', date: new Date('2024-09-15T18:00:00Z'),  type:"Hackethon" },
-        { name: 'Discussion Panel', date: new Date('2024-09-22T19:00:00Z'),  type:"Conference" }
-      ],
-      about: 'The Book Club is a community of avid readers who gather to discuss various literary works. We meet monthly to share our thoughts and enjoy engaging conversations about books from different genres. Join us for an enriching reading experience.',
-      contact: 'http://example.com/book-club',
-      admin : "me"
-    },
-    {
-      _id: '2',
-      clubName: 'Tech Enthusiasts',
-      clubId: 'tech-enthusiasts-002',
-      logo: 'http://example.com/logo2.png',
-      announcements: [
-        { aid:"1",text: 'Tech workshop this Saturday.', date: new Date('2024-09-13T09:00:00Z') },
-        { aid:"2",text: 'Guest speaker on AI next month.', date: new Date('2024-10-10T11:00:00Z') }
-      ],
-      events: [
-        { name: 'Coding Bootcamp', date: new Date('2024-09-20T09:00:00Z'),  type:"Hackethon" },
-        { name: 'AI Seminar', date: new Date('2024-10-05T14:00:00Z'),  type:"Seminar" }
-      ],
-      about: 'Tech Enthusiasts is a group dedicated to exploring and discussing the latest in technology and innovation. We host workshops, seminars, and coding bootcamps to keep our members at the forefront of tech advancements.',
-      contact: 'http://example.com/tech-enthusiasts',
-      admin : "me"
-    },
-    {
-      _id: '3',
-      clubName: 'Art Society',
-      clubId: 'art-society-003',
-      logo: 'http://example.com/logo3.png',
-      announcements: [
-        { aid:"1",text: 'Art exhibition opening this Friday.', date: new Date('2024-09-12T18:00:00Z') },
-        { aid:"2",text: 'Painting workshop available next week.', date: new Date('2024-09-18T10:00:00Z') }
-      ],
-      events: [
-        { name: 'Art Exhibition', date: new Date('2024-09-15T10:00:00Z'),  type:"Hackethon" },
-        { name: 'Workshop: Acrylic Techniques', date: new Date('2024-09-25T13:00:00Z'),  type:"Hackethon" }
-      ],
-      about: 'The Art Society is a vibrant community for artists and art lovers. We organize exhibitions, workshops, and collaborative projects to foster creativity and provide a platform for artistic expression.',
-      contact: 'http://example.com/art-society',
-      admin : "notme"
-    },
-    {
-      _id: '4',
-      clubName: 'Music Lovers',
-      clubId: 'music-lovers-004',
-      logo: 'http://example.com/logo4.png',
-      announcements: [
-        { aid:"1",text: 'Open mic night this Friday.', date: new Date('2024-09-08T19:00:00Z') },
-        { aid:"2",text: 'Music festival next month.', date: new Date('2024-10-05T15:00:00Z') }
-      ],
-      events: [
-        { name: 'Open Mic Night', date: new Date('2024-09-15T19:00:00Z'),  type:"Hackethon" },
-        { name: 'Annual Music Festival', date: new Date('2024-10-10T12:00:00Z'),  type:"Hackethon" }
-      ],
-      about: 'Music Lovers brings together people who are passionate about music. We host events, performances, and jam sessions to celebrate all genres and create a community of music enthusiasts.',
-      contact: 'http://example.com/music-lovers',
-      admin : "notme"
-    },
-    {
-      _id: '5',
-      clubName: 'Foodies Club',
-      clubId: 'foodies-club-005',
-      logo: 'http://example.com/logo5.png',
-      announcements: [
-        { aid:"1",text: 'Potluck dinner this weekend.', date: new Date('2024-09-12T18:00:00Z') },
-        { aid:"2",text: 'Cooking class on September 20th.', date: new Date('2024-09-20T11:00:00Z') }
-      ],
-      events: [
-        { name: 'Monthly Potluck', date: new Date('2024-09-15T17:00:00Z'), type:"Hackethon" },
-        { name: 'Cooking Class: Italian Cuisine', date: new Date('2024-09-25T14:00:00Z'),  type:"Hackethon"}
-      ],
-      about: 'Foodies Club is for those who love to cook and enjoy delicious food. We organize potlucks, cooking classes, and culinary events to share recipes, techniques, and great meals.',
-      contact: 'http://example.com/foodies-club',
-      admin : "notme"
-    }
-  ];
-  
-
-  const transformClubsAdvToClubs = (clubsAdv) => {
-    return clubsAdv.map(({ _id, clubName, clubId, logo }) => ({
-      _id,
-      clubName,
-      clubId,
-      logo
-    }));
-  };
-
+const followingClubs = ["456", "789"];
 
 //---------------------------------------------------//
 
+const Club = require('./models/Club');
 
-app.get('/api/clubs', (req, res) => {
-    const query = req.query.name || '';
-    
-    if (!query) {
-      return res.json(clubs);
+//---------------------------------------------------//
+//---------------------------------------------------//
+
+const multer = require('multer');
+const path = require('path');
+const Logo = require('./models/Logo');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
+app.post('/api/clubs/logo', upload.single('logo'), async (req, res) => {
+  const { clubId } = req.body;
+  const { file } = req;
+
+  if (!clubId || !file) {
+    return res.status(400).json({ message: 'Club ID and logo file are required' });
+  }
+
+  try {
+
+    let logo = await Logo.findOne({ clubId });
+
+    if (logo) {
+      logo.logo.data = file.buffer;
+      logo.logo.contentType = file.mimetype;
+      await logo.save();
+    } else {
+      logo = new Logo({
+        clubId,
+        logo: {
+          data: file.buffer,
+          contentType: file.mimetype
+        }
+      });
+      await logo.save();
     }
-  
-    const filteredClubs = clubs.filter(club => 
-      club.clubName.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    res.json(filteredClubs);
+
+    res.status(201).json({ message: 'Logo uploaded successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error uploading logo' });
+  }
 });
 
 
-app.get('/api/clubs/myclubs', (req, res) => {
-    const filteredClubs = clubs.filter(club =>
-        myClubs.includes(club.clubId)
-    );
+app.get('/api/clubs/logo/:clubId', async (req, res) => {
+  const { clubId } = req.params;
 
-    const query = req.query.name || '';
-    
-    if (!query) {
-      return res.json(filteredClubs);
+  try {
+    const logo = await Logo.findOne({ clubId });
+
+    if (!logo) {
+      return res.status(404).json({ message: 'Logo not found' });
     }
-  
-    const filteredClubsAdv = filteredClubs.filter(club => 
-      club.clubName.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    res.json(filteredClubsAdv);
+
+    res.contentType(logo.logo.contentType);
+    res.send(logo.logo.data);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching logo' });
+  }
 });
 
-app.get('/api/clubs/following', (req, res) => {
-    const filteredClubs = clubs.filter(club =>
-        followingClubs.includes(club.clubId)
-    );
-    
-    const query = req.query.name || '';
-    
-    if (!query) {
-      return res.json(filteredClubs);
+
+
+
+app.put('/api/clubs/logo/:clubId', upload.single('logo'), async (req, res) => {
+  const { clubId } = req.params;
+  const { file } = req;
+
+  if (!file) {
+    return res.status(400).json({ message: 'Logo file is required' });
+  }
+
+  try {
+    let logo = await Logo.findOne({ clubId });
+
+    if (logo) {
+      logo.logo.data = file.buffer;
+      logo.logo.contentType = file.mimetype;
+      await logo.save();
+      res.status(200).json({ message: 'Logo updated successfully' });
+    } else {
+      logo = new Logo({
+        clubId,
+        logo: {
+          data: file.buffer,
+          contentType: file.mimetype
+        }
+      });
+      await logo.save();
+      res.status(201).json({ message: 'Logo created successfully' });
     }
-  
-    const filteredClubsAdv = filteredClubs.filter(club => 
-      club.clubName.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    res.json(filteredClubsAdv);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating logo' });
+  }
 });
 
-app.get('/api/clubs/:id/get', (req, res) => {
+//---------------------------------------------------//
+//---------------------------------------------------//
+
+app.get('/api/clubs', async (req, res) => {
+    const query = req.query.name || '';
+    
+    try {
+        let clubs;
+        if (query) {
+            console.log("about to fetch qry "+query)
+            clubs = await Club.find({ clubName: new RegExp(query, 'i') });
+        } else {
+            console.log("No query")
+            clubs = await Club.find();
+        }
+        console.log("clubs fetched for qry "+query)
+        res.json(clubs);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching clubs' });
+    }
+});
+
+
+
+app.get('/api/clubs/myclubs',async (req, res) => {
+  const query = req.query.name || '';
+  
+  try {
+      let clubs;
+      if (query) {
+        clubs = await Club.find({
+          admin: "me", 
+          clubName: new RegExp(query, 'i')
+      });
+      } else {
+        clubs = await Club.find({ admin: "me" });
+      }
+      res.json(clubs);
+  } catch (err) {
+      res.status(500).json({ message: 'Error fetching clubs' });
+  }
+});
+
+app.get('/api/clubs/following',async (req, res) => {
+    const query = req.query.name || '';
+    
+    try {
+        let clubs;
+        if (query) {
+          clubs = await Club.find({
+            clubId: { $in: followingClubs },
+            clubName: new RegExp(query, 'i')
+        });
+        } else {
+          clubs = await Club.find({ clubId: { $in: followingClubs }  });
+        }
+        res.json(clubs);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching clubs' });
+    }
+});
+
+app.get('/api/clubs/:id/get', async (req, res) => {
+  try {
     const { id } = req.params;
-    const club = clubsAdv.find(club => club.clubId === id);
-    console.log(id)
+    console.log(`Fetching club with ID: ${id}`);
+
+    const club = await Club.findOne({ clubId: id });
+
     if (club) {
       res.json(club);
     } else {
       res.status(404).json({ message: 'Club not found' });
     }
-  });
+  } catch (error) {
+    console.error('Error fetching club:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-
-
-
-  app.post('/api/clubs', (req, res) => {
-    const { name, clubId, about, contact, logo} = req.body;
-    console.log(req.body);
-    if (!name || !clubId || !about || !contact === null) {
+  app.post('/api/clubs', async (req, res) => {
+    const { name, clubId, about, contact} = req.body;
+    
+    if (!name || !clubId || !about || !contact) {
       return res.status(400).json({ message: 'All fields are required' });
     }
-  
-    const existingClub = clubsAdv.find(club => club.clubId === clubId);
-    if (existingClub) {
-      return res.status(400).json({ message: 'Club ID already exists' });
-    }
-  console.log(existingClub);
-    const newClub = {
-        _id: (clubsAdv.length + 1).toString(), 
-        clubName: name,
-        clubId,
-        logo: logo || null,
-        announcements: [], 
-        events: [],
-        about,
-        contact,
-        admin : "me"
-      };
-    clubsAdv.push(newClub);
-    clubs = transformClubsAdvToClubs(clubsAdv);
-    myClubs.push(clubId);
-    console.log('pushed');
-    res.status(201).json({ message: 'Club created successfully', club: newClub });
-  });
+    
+    try {
+        const existingClub = await Club.findOne({ clubId });
+        if (existingClub) {
+            return res.status(400).json({ message: 'Club ID already exists' });
+        }
 
-app.delete('/api/clubs/announcement', (req, res) => {
-    console.log("hiiiii");
-    const { clubId, aid } = req.query;
-    console.log(clubId,"clubId aid", aid);
-    if (!clubId || !aid) {
-        return res.status(400).json({ message: 'Both clubId and announcement ID (aid) are required' });
-    }
+        const newClub = new Club({
+            clubName: name,
+            clubId,
+            announcements: [],
+            events: [],
+            about,
+            contact,
+            admin: "me",
+        });
 
-    const club = clubsAdv.find(club => club.clubId === clubId);
-    console.log(club,"club");
-    if (!club) {
-        return res.status(404).json({ message: 'Club not found 1' });
-    }
-
-    const initialLength = club.announcements.length;
-    club.announcements = club.announcements.filter(announcement => announcement.aid !== aid);
-    console.log(club.announcements.length,"length");
-    if (club.announcements.length < initialLength) {
-        clubs = transformClubsAdvToClubs(clubsAdv);
-        return res.status(200).json({ message: 'Announcement deleted successfully' });
-    } else {
-        return res.status(404).json({ message: 'Announcement not found' });
+        await newClub.save();
+        res.status(201).json({ message: 'Club created successfully', club: newClub });
+    } catch (err) {
+        res.status(500).json({ message: 'Error creating club' });
     }
 });
 
-app.post('/api/clubs/follow', (req, res) => {
+
+app.delete('/api/clubs/announcement', async (req, res) => {
+  const { clubId, aid } = req.query;
+
+  try {
+      const club = await Club.findOne({ clubId });
+      if (!club) {
+          return res.status(404).json({ message: 'Club not found' });
+      }
+
+      club.announcements = club.announcements.filter(announcement => announcement.aid !== aid);
+      await club.save();
+      res.status(200).json({ message: 'Announcement deleted' });
+  } catch (err) {
+      res.status(500).json({ message: 'Error deleting announcement' });
+  }
+});
+
+
+app.post('/api/clubs/follow', async (req, res) => {
   const { clubId } = req.query;
 
   if (!clubId) {
-      return res.status(400).json({ message: 'Club ID is required' });
-  }
-
-  if (myClubs.includes(clubId)) {
-      return res.status(400).json({ message: 'Club is already in my clubs' });
+    return res.status(400).json({ message: 'Club ID is required' });
   }
 
   if (followingClubs.includes(clubId)) {
-      return res.status(200).json({ message: 'You are already following this club' });
+    return res.status(400).json({ message: 'Already following this club' });
   }
 
   followingClubs.push(clubId);
 
-  const club = clubs.find(club => club.clubId === clubId);
+  try {
+    const club = await Club.findOne({ clubId });
 
-  if (club) {
-      club.priority += 1;
-      clubs.sort((a, b) => b.priority - a.priority);
-      res.status(200).json({ message: 'Successfully followed the club', clubId, clubs });
-  } else {
-      res.status(404).json({ message: 'Club not found' });
+    if (!club) {
+      return res.status(404).json({ message: 'Club not found' });
+    }
+
+    club.priority += 1;
+    await club.save();
+
+    res.status(200).json({ message: 'Successfully followed the club' });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 
-app.post('/api/clubs/unfollow', (req, res) => {
+
+app.post('/api/clubs/unfollow', async (req, res) => {
   const { clubId } = req.query;
 
   if (!clubId) {
-      return res.status(400).json({ message: 'Club ID is required' });
+    return res.status(400).json({ message: 'Club ID is required' });
   }
 
   const index = followingClubs.indexOf(clubId);
 
   if (index === -1) {
-      return res.status(404).json({ message: 'Club not found in following list' });
+    return res.status(404).json({ message: 'Club not found in following list' });
   }
 
   followingClubs.splice(index, 1);
 
-  const club = clubs.find(club => club.clubId === clubId);
+  try {
+    const club = await Club.findOne({ clubId });
 
-  if (club) {
-      club.priority -= 1;
-      clubs.sort((a, b) => b.priority - a.priority);
-      res.status(200).json({ message: 'Successfully unfollowed the club', clubId, clubs });
-  } else {
-      res.status(404).json({ message: 'Club not found' });
+    if (!club) {
+      return res.status(404).json({ message: 'Club not found' });
+    }
+
+    club.priority -= 1;
+    await club.save();
+
+    res.status(200).json({ message: 'Successfully unfollowed the club' });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 app.get('/api/clubs/follow-status', (req, res) => {
@@ -343,84 +327,115 @@ app.get('/api/clubs/follow-status', (req, res) => {
 });
 
 
-app.put('/api/clubs/:id', (req, res) => {
+app.put('/api/clubs/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, clubId, about, contact, logo } = req.body;
+  const { name, about, contact } = req.body;
 
-  if (!name || !clubId || !about || !contact) {
-      return res.status(400).json({ message: 'All fields are required' });
+  if (!name || !about || !contact) {
+    return res.status(400).json({ message: 'Name, about, and contact are required' });
   }
 
-  const existingClub = clubsAdv.find(club => club.clubId === id);
-
-  if (existingClub) {
-      existingClub.clubName = name;
-      existingClub.clubId = clubId;
-      existingClub.about = about;
-      existingClub.contact = contact;
-      existingClub.logo = logo || existingClub.logo;
-
-      clubs = clubs.map(club => 
-          club.clubId === id 
-          ? { ...club, clubName: name, clubId: clubId, logo: logo || club.logo } 
-          : club
-      );
-
-      res.status(200).json({ message: 'Club updated successfully', club: existingClub });
-  } else {
-      return res.status(404).json({ message: 'Club not found' });
+  try {
+    const updatedClub = await Club.findOneAndUpdate(
+      { clubId: id },
+      { clubName : name, about, contact },
+      { new: true, runValidators: true }
+    );
+    console.log(updatedClub ? "yes":"No");
+      if (!updatedClub) {
+          return res.status(404).json({ message: 'Club not found' });
+      }
+      res.json({ message: 'Club updated', club: updatedClub });
+  } catch (err) {
+      res.status(500).json({ message: 'Error updating club' });
   }
 });
 
 
-app.post('/api/clubs/announcement', (req, res) => {
-  const { clubId, text } = req.body;
+app.post('/api/clubs/announcement', async (req, res) => {
+    const { clubId, text } = req.body;
 
-  if (!clubId || !text) {
-      return res.status(400).json({ message: 'Both clubId and announcement text are required' });
-  }
+    if (!clubId || !text) {
+        return res.status(400).json({ message: 'Both clubId and announcement text are required' });
+    }
 
-  const club = clubsAdv.find(club => club.clubId === clubId);
+    try {
+        const club = await Club.findOne({ clubId });
 
-  if (!club) {
-      return res.status(404).json({ message: 'Club not found' });
-  }
+        if (!club) {
+            return res.status(404).json({ message: 'Club not found' });
+        }
 
-  const newAnnouncement = {
-      aid: (club.announcements.length + 1).toString(),
-      text,
-      date: new Date()
-  };
+        const newAnnouncement = {
+            aid: (club.announcements.length + 1).toString(),
+            text,
+            date: new Date()
+        };
 
-  club.announcements.push(newAnnouncement);
-  club.announcements.sort((a, b) => new Date(b.date) - new Date(a.date));
+        club.announcements.push(newAnnouncement);
+        club.announcements.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  clubs = transformClubsAdvToClubs(clubsAdv);
+        await club.save();
 
-  res.status(201).json({ message: 'Announcement added successfully', announcement: newAnnouncement });
+        res.status(201).json({ message: 'Announcement added successfully', announcement: newAnnouncement });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
 
-app.post('/api/clubs/report-spam', (req, res) => {
-  const { clubId } = req.body;
+app.post('/api/clubs/report-spam', async (req, res) => {
+    const { clubId } = req.body;
+
+    if (!clubId) {
+        return res.status(400).json({ message: 'clubId is required' });
+    }
+
+    try {
+        const club = await Club.findOne({ clubId });
+
+        if (!club) {
+            return res.status(404).json({ message: 'Club not found' });
+        }
+
+        club.priority -= 10;
+
+        await club.save();
+
+        const updatedClubs = await Club.find().sort({ priority: -1 });
+
+        res.status(200).json(updatedClubs);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.delete('/api/clubs/:clubId', async (req, res) => {
+  const { clubId } = req.params;
 
   if (!clubId) {
-    return res.status(400).json({ message: 'clubId is required' });
+    return res.status(400).json({ message: 'Club ID is required' });
   }
 
-  const club = clubs.find(club => club.clubId === clubId);
+  try {
+    const club = await Club.findOne({ clubId });
 
-  if (!club) {
-    return res.status(404).json({ message: 'Club not found' });
+    if (!club) {
+      return res.status(404).json({ message: 'Club not found' });
+    }
+
+    if (club.admin !== 'me') {
+      return res.status(403).json({ message: 'You are not authorized to delete this club' });
+    }
+
+    await Club.deleteOne({ clubId });
+
+    res.status(200).json({ message: 'Club deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting club:', err);
+    res.status(500).json({ message: 'Error deleting club' });
   }
-
-  club.priority -= 10;
-
-  clubs.sort((a, b) => b.priority - a.priority);
-
-  res.status(200).json(clubs);
 });
-
 
 //---------------------------------------------------//
 

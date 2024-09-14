@@ -13,7 +13,8 @@ const ClubPage = () => {
     const [club, setClub] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [reload, setReload] = useState(0);
+    const [reload, setReload] = useState(0); 
+    const [clubIdforLogo,setClubIdForLogo] = useState(-1);
  
     const { clubId } = useParams();
     const navigate = useNavigate();
@@ -21,6 +22,8 @@ const ClubPage = () => {
     const handleLearnMore = (id) => {
       navigate(`/events/${id}`);
     };
+
+    
 
 
     const reportSpam = async (clubId) => {
@@ -106,6 +109,7 @@ const ClubPage = () => {
           }
           const data = await response.json();
           setClub(data);
+          setClubIdForLogo(data.clubId);
           
         } catch (error) {
           setError(error.message);
@@ -294,10 +298,13 @@ const ClubPage = () => {
                 <img
                   width="84px"
                   height="84px"
-                  style={{borderRadius:"16px"}}
-                  src="https://i.pinimg.com/originals/b5/1b/78/b51b78ecc9e5711274931774e433b5e6.png"
+                  style={{borderRadius:"16px",objectFit: 'cover',
+                    display: 'block',
+                    margin: '0 auto',}}
+                  src={`http://localhost:8000/api/clubs/logo/${club.clubId}`}
                   alt="avatar"
                 />
+                
                 <div style={{display :"flex", flexDirection:"column", gap : "12px"}}>
                     <h2>{club.clubName}</h2>
                     <p>@{club.clubId}</p>
@@ -347,7 +354,7 @@ const ClubPage = () => {
         </ClubBody>}
         {isEditOpen && !loading && !error && <div>
                 <Button onClick={()=>setEditOpen(false)} style={{background:"grey", marginBottom:"48px"}}>back</Button>
-        <AnnouncementAndEditClub club={club} changes={changes} setchanges={setchanges}/>
+        <AnnouncementAndEditClub club={club} changes={changes} setchanges={setchanges} clubIdforLogo={clubIdforLogo} setClubIdForLogo={setClubIdForLogo}/>
             </div>}
           {loading && <h2>Loading...</h2>}
           {error && <h2>Error</h2>}
@@ -357,15 +364,57 @@ const ClubPage = () => {
 
 ///////////////////////////////////////////////////////////////////////////
 
-export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
+export const AnnouncementAndEditClub = ({club,changes,setchanges, clubIdforLogo, setClubIdForLogo}) => {
   const [announcement, setAnnouncement] = useState('');
   const [clubDetails, setClubDetails] = useState({
     name: club.clubName,
     clubId: club.clubId,
     about: club.about,
-    contact: club.contact,
-    logo:null
+    contact: club.contact
   });
+  const navigate = useNavigate();
+
+const [logoImage, setLogoImage] = useState(null);
+
+
+const handleFileChange = (e) => {
+  setLogoImage(e.target.files[0]);
+};
+
+const uploadLogo = async () => {
+  let x = 0;
+  if (!logoImage || clubIdforLogo==-1) {
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('logo', logoImage);
+  formData.append('clubId', clubIdforLogo);
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/clubs/logo/${clubIdforLogo}`, {
+      method: 'PUT',
+      body: formData,
+      headers: {
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error uploading logo.');
+    }
+
+    alert('Logo uploaded successfully!');
+    x=1;
+  } catch (error) {
+    console.error('Error uploading logo:', error);
+    alert('Error uploading logo.');
+    x = 2;
+  }
+  setClubIdForLogo(-1);
+  return x;
+  };
+
+
 
   const handleAnnouncementSubmit = (e) => {
     const confirmedSubmission = window.confirm('Are you sure you want to post this announcement?');
@@ -399,6 +448,7 @@ export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
     postAnnouncement(club.clubId,announcement);    
     setAnnouncement('');
     setchanges((changes+1)%2);
+
   }
 
   };
@@ -413,6 +463,7 @@ export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
 
   const handleClubDetailsSubmit = (e) => {
     e.preventDefault();
+    uploadLogo();
     const confirmedSubmission = window.confirm('Are you sure you want to update this club details?');
     if(confirmedSubmission){
       const updateClubDetails = async (clubDetails) => {
@@ -441,6 +492,56 @@ export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
     }
     else{return;}
   };
+
+  const deleteLogo = async (clubId) => {
+    if (!clubId) {
+      alert('Club ID is required to delete the logo.');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:8000/api/clubs/logo/${clubId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error deleting logo.');
+      }
+  
+      alert('Logo deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting logo:', error);
+      alert('Error deleting logo.');
+    }
+  };
+  
+
+  const deleteClub = async (clubId) => {
+    if (!window.confirm('Are you sure you want to delete this club? This action cannot be undone.')) {
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:8000/api/clubs/${clubId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Network response was not ok');
+      }
+      deleteLogo(clubId);
+      alert('Club deleted successfully!');
+      navigate(`/clubs`);
+    } catch (error) {
+      console.error('Error deleting club:', error);
+      alert('Error deleting club. Please try again.');
+    }
+    
+  };
+  
+  
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
@@ -493,7 +594,10 @@ export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
               type="text"
               name="clubId"
               value={clubDetails.clubId}
-              onChange={handleClubDetailsChange}
+              onChange={(e) => {
+                setClubIdForLogo(e.target.value);
+                handleClubDetailsChange(e);
+              }}
               required
               style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd', fontSize: '16px' }}
             />
@@ -527,6 +631,7 @@ export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
             <input
             type='file'
             id="logo"
+            onChange={handleFileChange}
             style={{ width: '80%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }}
             />
         </div>
@@ -536,7 +641,14 @@ export const AnnouncementAndEditClub = ({club,changes,setchanges}) => {
           >
             Update Club Details
           </button>
+          
         </form>
+        <button
+            onClick={()=>deleteClub(club.clubId)}
+            style={{ padding: '10px 20px', backgroundColor: 'white', color: 'red', border: '1px solid red', cursor: 'pointer', fontSize: '16px' }}
+          >
+            Delete Club
+          </button>
       </div>
     </div>
   );
