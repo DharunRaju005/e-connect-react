@@ -3,6 +3,8 @@ import img from "../Asserts/psgitech.png";
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect} from 'react';
+import {selectUserName} from '../store/slices/UserSlice';
+import {useSelector} from 'react-redux'
 
 
     const BodyContainer = styled.div`
@@ -72,11 +74,14 @@ import { useState, useEffect} from 'react';
 
 const ClubsHome = () => {
 
+  const username = useSelector(selectUserName);
+
     const [clubDetails, setClubDetails] = useState({
         name: '',
         clubId: '',
         about:'',
         contact:'',
+        admin:username
       });
 
 
@@ -128,6 +133,10 @@ const ClubsHome = () => {
     navigate(`/clubs/${id}`);
   };
 
+  const gotoLogin =()=> {
+    navigate(`/login`);
+  };
+
   const handleFileChange = (e) => {
     setLogoImage(e.target.files[0]);
   };
@@ -144,7 +153,7 @@ const ClubsHome = () => {
     formData.append('clubId', clubIdforLogo);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/clubs/logo`, {
+      const response = await fetch(`http://localhost:8000/api/clubs/logo/${clubIdforLogo}`, {
         method: 'PUT',
         body: formData,
         headers: {
@@ -202,6 +211,7 @@ const ClubsHome = () => {
           throw new Error(errorData.message || 'Network response was not ok');
         }
         const data = await response.json();
+        alert(data.message);
         setError(null);
         
       } catch (error) {
@@ -219,6 +229,7 @@ const ClubsHome = () => {
 
   return (
     <>
+    {!username && gotoLogin()}
       <BodyContainer>
       {!createClub&&<h1>Clubs</h1>}
       
@@ -328,8 +339,8 @@ const ClubsHome = () => {
          { !createClub &&
             <PageSelector>
                 <Selectors  onClick={() => setType("")}  style={type=="" ? {background : "green", color : "white"} : {}}>All Clubs</Selectors>
-                <Selectors  onClick={() => setType("/myclubs")} style={type=="/myclubs" ? {background : "green", color : "white"} : {}}>My Clubs</Selectors>
-                <Selectors  onClick={() => setType("/following")} style={type=="/following" ? {background : "green", color : "white"} : {}}>Following</Selectors>
+                <Selectors  onClick={() => setType(`/myclubs/${username}`)} style={type==`/myclubs/${username}` ? {background : "green", color : "white"} : {}}>My Clubs</Selectors>
+                <Selectors  onClick={() => setType(`/following/${username}`)} style={type==`/following/${username}` ? {background : "green", color : "white"} : {}}>Following</Selectors>
             </PageSelector>
           }
           {!createClub && (

@@ -20,6 +20,8 @@ const clubSchema = new mongoose.Schema({
   about: String,
   contact: String,
   admin: String,
+  followers: [String],
+  reporters: [String],
   priority: { type: Number, default: 0 },
 });
 

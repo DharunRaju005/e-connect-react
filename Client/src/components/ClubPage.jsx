@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useNavigate, useParams} from 'react-router-dom'
 import { format, parseISO } from 'date-fns';
+import {selectUserName} from '../store/slices/UserSlice';
+import {useSelector} from 'react-redux'
 
 const ClubPage = () => {
+
+    const username = useSelector(selectUserName);
 
     const [isFollowed, setFollowed] = useState(false);
     const [myClub, setMyClub] = useState(false);
@@ -15,6 +19,7 @@ const ClubPage = () => {
     const [error, setError] = useState(null);
     const [reload, setReload] = useState(0); 
     const [clubIdforLogo,setClubIdForLogo] = useState(-1);
+    const [isReported, setReported] = useState(false);
  
     const { clubId } = useParams();
     const navigate = useNavigate();
@@ -23,17 +28,20 @@ const ClubPage = () => {
       navigate(`/events/${id}`);
     };
 
+    const gotoLogin =()=> {
+      navigate(`/login`);
+    };
     
 
 
-    const reportSpam = async (clubId) => {
-      if (!clubId) {
+    const reportSpam = async (clubId, username,setchanges, changes) => {
+      if (!clubId || !username) {
           alert('Club ID is required');
           return;
       }
 
       try {
-          const response = await fetch('http://localhost:8000/api/clubs/report-spam', {
+          const response = await fetch(`http://localhost:8000/api/clubs/report-spam/${username}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -42,10 +50,11 @@ const ClubPage = () => {
           });
 
           const data = await response.json();
-          if (data.message === 'Club priority updated and clubs sorted') {
+          if (response.ok) {
               alert('Club reported as spam successfully.');
+              setchanges((changes+1)%2);
           } else {
-              alert(data.message);
+              console.log(data.message);
           }
       } catch (error) {
           console.error('Error reporting spam:', error);
@@ -58,7 +67,7 @@ const ClubPage = () => {
     useEffect(() => {
       const checkFollowingStatus = async () => {
           try {
-              const response = await fetch(`http://localhost:8000/api/clubs/follow-status?clubId=${clubId}`);
+              const response = await fetch(`http://localhost:8000/api/clubs/follow-status/${username}?clubId=${clubId}`);
               if (!response.ok) {
                   throw new Error('Network response was not ok');
               }
@@ -80,8 +89,8 @@ const ClubPage = () => {
     const _id = club.clubId;
     try {
         const endpoint = isFollowed
-            ? `http://localhost:8000/api/clubs/unfollow?clubId=${_id}`
-            : `http://localhost:8000/api/clubs/follow?clubId=${_id}`;
+            ? `http://localhost:8000/api/clubs/unfollow/${username}?clubId=${_id}`
+            : `http://localhost:8000/api/clubs/follow/${username}?clubId=${_id}`;
         
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -101,7 +110,7 @@ const ClubPage = () => {
 };
 
     useEffect(() => {
-      const fetchClubDetails = async () => {
+      const fetchClubDetails = async (username) => {
         try {
           const response = await fetch(`http://localhost:8000/api/clubs/${clubId}/get`);
           if (!response.ok) {
@@ -110,7 +119,7 @@ const ClubPage = () => {
           const data = await response.json();
           setClub(data);
           setClubIdForLogo(data.clubId);
-          
+          setReported(data.reporters.includes(username))
         } catch (error) {
           setError(error.message);
         } finally {
@@ -118,14 +127,14 @@ const ClubPage = () => {
         }
       };
   
-      fetchClubDetails();
+      fetchClubDetails(username);
       
     }, [clubId, changes]);
 
 
     useEffect(() => {
       if (club) {
-          setMyClub(club.admin === "me");
+          setMyClub(club.admin === username);
       } else {
           setMyClub(false);
       }
@@ -292,6 +301,7 @@ const ClubPage = () => {
 
   return (
     <ClubPageContainer>
+      {!username && gotoLogin()}
       <Button onClick={()=>navigate('/clubs')} style={{background:"grey"}}>Back to Clubs Home</Button>
         {!isEditOpen  && !loading && !error && <ClubHeader>
             <ClubLogo>
@@ -312,16 +322,16 @@ const ClubPage = () => {
             </ClubLogo>
             <ClubActions>
                 <Button style={isFollowed? {background:"white", color:"green", borderColor:"green"}:{}} onClick={handleFollowToggle}>{myClub? "Edit" : isFollowed ? "Unfollow": " Follow "}</Button>
-                {!myClub && <Button style={{background:"white", color:"red", borderColor:"red"}} onClick={()=>reportSpam(club.clubId)}>Report Spam</Button>}
+                {!myClub && <Button style={{background:"white", color:`${!isReported ? "red" : "grey"}`, borderColor:`${!isReported ? "red" : "grey"}`}} onClick={()=>reportSpam(club.clubId, username,setchanges,changes)}>Report Spam</Button>}
             </ClubActions>
         </ClubHeader>}
         {!isEditOpen  && !loading && !error && <ClubBody>
             <PageSelector>
-                <Selectors  onClick={() => setCurrentPage("Announcements")}  style={currentPage=="Announcements" ? {background : "green", color : "white"} : {}}>Announcements</Selectors>
-                <Selectors  onClick={() => setCurrentPage("Events")} style={currentPage=="Events" ? {background : "green", color : "white"} : {}}>Events</Selectors>
-                <Selectors  onClick={() => setCurrentPage("About")} style={currentPage=="About" ? {background : "green", color : "white"} : {}}>About</Selectors>
+                <Selectors  onClick={() => setCurrentPage("Announcements")}  style={currentPage==="Announcements" ? {background : "green", color : "white"} : {}}>Announcements</Selectors>
+                <Selectors  onClick={() => setCurrentPage("Events")} style={currentPage==="Events" ? {background : "green", color : "white"} : {}}>Events</Selectors>
+                <Selectors  onClick={() => setCurrentPage("About")} style={currentPage==="About" ? {background : "green", color : "white"} : {}}>About</Selectors>
             </PageSelector>
-            { currentPage=="Announcements"  && <Announcements>
+            { currentPage==="Announcements"  && <Announcements>
             {club.announcements.length === 0 && <p>No contents here</p>}
             {club.announcements.length !== 0 && club.announcements.map((x, index) => (
                 <AnnouncementCard>
@@ -348,13 +358,13 @@ const ClubPage = () => {
             {currentPage=="About" && <About>
                 <h2>Welcome to {club.clubName}</h2>
                 <p style={{textAlign:'justify', margin:"12px", alignItems:"center", maxWidth : "50%"}}>{club.about}</p>
-                <Button style={{background : "#777777"}}>{club.contact}</Button>
+                <Button onClick={()=>window.location.href = `${club.contact}`} style={{background : "#777777"}}>{club.contact}</Button>
                 
             </About>}
         </ClubBody>}
         {isEditOpen && !loading && !error && <div>
                 <Button onClick={()=>setEditOpen(false)} style={{background:"grey", marginBottom:"48px"}}>back</Button>
-        <AnnouncementAndEditClub club={club} changes={changes} setchanges={setchanges} clubIdforLogo={clubIdforLogo} setClubIdForLogo={setClubIdForLogo}/>
+        <AnnouncementAndEditClub club={club} changes={changes} setchanges={setchanges} clubIdforLogo={clubIdforLogo} setClubIdForLogo={setClubIdForLogo} username={username}/>
             </div>}
           {loading && <h2>Loading...</h2>}
           {error && <h2>Error</h2>}
@@ -364,7 +374,7 @@ const ClubPage = () => {
 
 ///////////////////////////////////////////////////////////////////////////
 
-export const AnnouncementAndEditClub = ({club,changes,setchanges, clubIdforLogo, setClubIdForLogo}) => {
+export const AnnouncementAndEditClub = ({club,changes,setchanges, clubIdforLogo, setClubIdForLogo, username}) => {
   const [announcement, setAnnouncement] = useState('');
   const [clubDetails, setClubDetails] = useState({
     name: club.clubName,
@@ -416,7 +426,7 @@ const uploadLogo = async () => {
 
 
 
-  const handleAnnouncementSubmit = (e) => {
+  const handleAnnouncementSubmit = async (e) => {
     const confirmedSubmission = window.confirm('Are you sure you want to post this announcement?');
     if(confirmedSubmission){
     e.preventDefault();
@@ -445,7 +455,7 @@ const uploadLogo = async () => {
         throw error;
       }
     };
-    postAnnouncement(club.clubId,announcement);    
+    const x = await postAnnouncement(club.clubId,announcement);    
     setAnnouncement('');
     setchanges((changes+1)%2);
 
@@ -461,13 +471,14 @@ const uploadLogo = async () => {
     }));
   };
 
-  const handleClubDetailsSubmit = (e) => {
+  const handleClubDetailsSubmit = async(e) => {
     e.preventDefault();
     uploadLogo();
     const confirmedSubmission = window.confirm('Are you sure you want to update this club details?');
     if(confirmedSubmission){
       const updateClubDetails = async (clubDetails) => {
         try {
+            clubDetails.clubId = clubIdforLogo;
             const response = await fetch(`http://localhost:8000/api/clubs/${club.clubId}`, {
                 method: 'PUT',
                 headers: {
@@ -487,7 +498,7 @@ const uploadLogo = async () => {
             console.error('There was a problem with the fetch operation:', error);
         }
     };
-    updateClubDetails(clubDetails);
+    const x = await updateClubDetails(clubDetails);
     setchanges((changes+1)%2);
     }
     else{return;}
@@ -512,18 +523,18 @@ const uploadLogo = async () => {
       alert('Logo deleted successfully!');
     } catch (error) {
       console.error('Error deleting logo:', error);
-      alert('Error deleting logo.');
     }
   };
   
 
-  const deleteClub = async (clubId) => {
+  const deleteClub = async (clubId,username) => {
     if (!window.confirm('Are you sure you want to delete this club? This action cannot be undone.')) {
       return;
     }
   
     try {
-      const response = await fetch(`http://localhost:8000/api/clubs/${clubId}`, {
+      deleteLogo(clubId);
+      const response = await fetch(`http://localhost:8000/api/clubs/${clubId}?username=${username}`, {
         method: 'DELETE',
       });
   
@@ -531,7 +542,6 @@ const uploadLogo = async () => {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Network response was not ok');
       }
-      deleteLogo(clubId);
       alert('Club deleted successfully!');
       navigate(`/clubs`);
     } catch (error) {
@@ -596,7 +606,6 @@ const uploadLogo = async () => {
               value={clubDetails.clubId}
               onChange={(e) => {
                 setClubIdForLogo(e.target.value);
-                handleClubDetailsChange(e);
               }}
               required
               style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd', fontSize: '16px' }}
@@ -644,7 +653,7 @@ const uploadLogo = async () => {
           
         </form>
         <button
-            onClick={()=>deleteClub(club.clubId)}
+            onClick={()=>deleteClub(club.clubId,username)}
             style={{ padding: '10px 20px', backgroundColor: 'white', color: 'red', border: '1px solid red', cursor: 'pointer', fontSize: '16px' }}
           >
             Delete Club

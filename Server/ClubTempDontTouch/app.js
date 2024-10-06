@@ -20,8 +20,6 @@ app.use(express.json());
 
 //---------------------------------------------------//
 
-const followingClubs = ["456", "789"];
-
 //---------------------------------------------------//
 
 const Club = require('./models/Club');
@@ -32,6 +30,7 @@ const Club = require('./models/Club');
 const multer = require('multer');
 const path = require('path');
 const Logo = require('./models/Logo');
+const { use } = require('../Routes/AuthRoutes');
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -133,10 +132,10 @@ app.get('/api/clubs', async (req, res) => {
         let clubs;
         if (query) {
             console.log("about to fetch qry "+query)
-            clubs = await Club.find({ clubName: new RegExp(query, 'i') });
+            clubs = await Club.find({ clubName: new RegExp(query, 'i') }).sort({ priority: -1 });;
         } else {
             console.log("No query")
-            clubs = await Club.find();
+            clubs = await Club.find().sort({ priority: -1 });
         }
         console.log("clubs fetched for qry "+query)
         res.json(clubs);
@@ -147,18 +146,19 @@ app.get('/api/clubs', async (req, res) => {
 
 
 
-app.get('/api/clubs/myclubs',async (req, res) => {
+app.get('/api/clubs/myclubs/:username',async (req, res) => {
   const query = req.query.name || '';
-  
+  const {username} = req.params;
+
   try {
       let clubs;
       if (query) {
         clubs = await Club.find({
-          admin: "me", 
+          admin: username, 
           clubName: new RegExp(query, 'i')
-      });
+      }).sort({ priority: -1 });
       } else {
-        clubs = await Club.find({ admin: "me" });
+        clubs = await Club.find({ admin: username }).sort({ priority: -1 });
       }
       res.json(clubs);
   } catch (err) {
@@ -166,24 +166,28 @@ app.get('/api/clubs/myclubs',async (req, res) => {
   }
 });
 
-app.get('/api/clubs/following',async (req, res) => {
-    const query = req.query.name || '';
-    
-    try {
-        let clubs;
-        if (query) {
-          clubs = await Club.find({
-            clubId: { $in: followingClubs },
-            clubName: new RegExp(query, 'i')
-        });
-        } else {
-          clubs = await Club.find({ clubId: { $in: followingClubs }  });
-        }
-        res.json(clubs);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching clubs' });
-    }
+app.get('/api/clubs/following/:username', async (req, res) => {
+  const username = req.params.username;
+  const query = req.query.name || '';
+  try {
+      let clubs;
+
+      clubs = await Club.find({
+          followers: username
+      }).sort({ priority: -1 });
+
+      if (query) {
+          clubs = clubs.filter(club => 
+              club.clubName.match(new RegExp(query, 'i'))
+          );
+      }
+
+      res.json(clubs);
+  } catch (err) {
+      res.status(500).json({ message: 'Error fetching clubs' });
+  }
 });
+
 
 app.get('/api/clubs/:id/get', async (req, res) => {
   try {
@@ -204,7 +208,7 @@ app.get('/api/clubs/:id/get', async (req, res) => {
 });
 
   app.post('/api/clubs', async (req, res) => {
-    const { name, clubId, about, contact} = req.body;
+    const { name, clubId, about, contact,admin} = req.body;
     
     if (!name || !clubId || !about || !contact) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -223,7 +227,7 @@ app.get('/api/clubs/:id/get', async (req, res) => {
             events: [],
             about,
             contact,
-            admin: "me",
+            admin: admin,
         });
 
         await newClub.save();
@@ -252,18 +256,13 @@ app.delete('/api/clubs/announcement', async (req, res) => {
 });
 
 
-app.post('/api/clubs/follow', async (req, res) => {
+app.post('/api/clubs/follow/:username', async (req, res) => {
   const { clubId } = req.query;
+  const {username} = req.params;
 
   if (!clubId) {
     return res.status(400).json({ message: 'Club ID is required' });
   }
-
-  if (followingClubs.includes(clubId)) {
-    return res.status(400).json({ message: 'Already following this club' });
-  }
-
-  followingClubs.push(clubId);
 
   try {
     const club = await Club.findOne({ clubId });
@@ -271,7 +270,13 @@ app.post('/api/clubs/follow', async (req, res) => {
     if (!club) {
       return res.status(404).json({ message: 'Club not found' });
     }
-
+    if(club.admin == username){
+      res.status(400).json({message : 'You cannot follow this club since you are admin of this club'})
+    }
+    if(club.followers.includes(username)){
+      return res.status(400).json({ message: 'Already following this club' });
+    }
+    club.followers.push(username);
     club.priority += 1;
     await club.save();
 
@@ -283,20 +288,14 @@ app.post('/api/clubs/follow', async (req, res) => {
 
 
 
-app.post('/api/clubs/unfollow', async (req, res) => {
+app.post('/api/clubs/unfollow/:username', async (req, res) => {
   const { clubId } = req.query;
+  const {username} = req.params;
 
   if (!clubId) {
     return res.status(400).json({ message: 'Club ID is required' });
   }
 
-  const index = followingClubs.indexOf(clubId);
-
-  if (index === -1) {
-    return res.status(404).json({ message: 'Club not found in following list' });
-  }
-
-  followingClubs.splice(index, 1);
 
   try {
     const club = await Club.findOne({ clubId });
@@ -304,6 +303,20 @@ app.post('/api/clubs/unfollow', async (req, res) => {
     if (!club) {
       return res.status(404).json({ message: 'Club not found' });
     }
+    if(club.admin == username){
+      res.status(400).json({message : 'You cannot unfollow this club since you are admin of this club'})
+    }
+    if(!club.followers.includes(username)){
+      return res.status(400).json({ message: 'Already not following this club' });
+    }
+
+    const index = club.followers.indexOf(username);
+
+    if (index === -1) {
+      return res.status(404).json({ message: 'Club not found in following list' });
+    }
+
+    club.followers.splice(index, 1);
 
     club.priority -= 1;
     await club.save();
@@ -316,13 +329,20 @@ app.post('/api/clubs/unfollow', async (req, res) => {
 
 
 
-app.get('/api/clubs/follow-status', (req, res) => {
+app.get('/api/clubs/follow-status/:username', async (req, res) => {
     const { clubId } = req.query;
+    const {username} = req.params;
+    
     if (!clubId) {
         return res.status(400).json({ message: 'clubId is required' });
     }
+    const club = await Club.findOne({ clubId });
 
-    const isFollowing = followingClubs.includes(clubId);
+    if (!club) {
+      return res.status(404).json({ message: 'Club not found' });
+    }
+
+    const isFollowing = club.followers.includes(username);
     res.json({ isFollowing });
 });
 
@@ -384,8 +404,9 @@ app.post('/api/clubs/announcement', async (req, res) => {
 });
 
 
-app.post('/api/clubs/report-spam', async (req, res) => {
+app.post('/api/clubs/report-spam/:username', async (req, res) => {
     const { clubId } = req.body;
+    const {username} = req.params;
 
     if (!clubId) {
         return res.status(400).json({ message: 'clubId is required' });
@@ -398,6 +419,12 @@ app.post('/api/clubs/report-spam', async (req, res) => {
             return res.status(404).json({ message: 'Club not found' });
         }
 
+        if(club.reporters.includes(username)){
+          return res.status(400).json({ message: 'Already reported' });
+        }
+        else{
+          club.reporters.push(username);
+        }
         club.priority -= 10;
 
         await club.save();
@@ -412,7 +439,8 @@ app.post('/api/clubs/report-spam', async (req, res) => {
 
 app.delete('/api/clubs/:clubId', async (req, res) => {
   const { clubId } = req.params;
-
+  const username = req.query.username;
+  console.log(username);
   if (!clubId) {
     return res.status(400).json({ message: 'Club ID is required' });
   }
@@ -424,7 +452,9 @@ app.delete('/api/clubs/:clubId', async (req, res) => {
       return res.status(404).json({ message: 'Club not found' });
     }
 
-    if (club.admin !== 'me') {
+    if (club.admin !== username) {
+      console.log(username);
+      console.log(club.admin);
       return res.status(403).json({ message: 'You are not authorized to delete this club' });
     }
 
