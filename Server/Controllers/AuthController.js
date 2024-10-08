@@ -54,7 +54,7 @@ const signup = async (req, res) => {
   } catch (err) {
     console.log(err);
     const errors = handleErrors(err);
-    console.log("Auth Controller line 54");
+    console.log("Auth Controller line 54"+errors);
     res.json({ errors, created: false });
   }
 };

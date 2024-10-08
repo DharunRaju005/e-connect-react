@@ -71,7 +71,7 @@ const SignUp = () => {
           console.log(token);
           
           // Send the token to the backend using Axios
-          axios.post("http://localhost:4000/google-auth",token)
+          axios.post("http://localhost:8000/google-auth",token)
             .then(async (result) => {
               // Handle the response from the backend
               console.log("sigup line 64");
@@ -83,19 +83,16 @@ const SignUp = () => {
                 console.log("sigup line 69");
                 history("/home");
               } else {
-                // Signup failed, display an error message
                 alert("Signup failed");
                 history("/signup");
               }
             })
             .catch((error) => {
               console.error("Error:", error);
-              // Handle error
             });
         })
         .catch((error) => {
           console.error("Error:", error);
-          // Handle error
         });
     };
 
@@ -113,7 +110,7 @@ const SignUp = () => {
     if (agreed) {
       try {
         const { data } = await axios.post(
-          "http://localhost:4000/signup",
+          "http://localhost:8000/signup",
           {
             ...values,
           },

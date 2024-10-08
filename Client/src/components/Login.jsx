@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useState,useEffect } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import login from "../Asserts/login.svg";
@@ -16,9 +16,11 @@ const Login = () => {
     password: "",
   });
 
+  const [pathname, setPathname] = useState(useLocation().pathname);
+
   useEffect(() => {
     if (cookies.jwt) {
-      Navigate("/home");
+      Navigate(pathname);
     }
   }, [cookies, Navigate]);
 
@@ -31,7 +33,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/login",
+        "http://localhost:8000/login",
         {
           ...values,
         },

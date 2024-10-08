@@ -13,11 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-    },
-    googleId: {
-        type: String,
-        unique: true,
-    },
+    }
 });
 
 // Hash password before saving

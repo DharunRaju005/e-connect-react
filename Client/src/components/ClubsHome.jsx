@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect} from 'react';
 import {selectUserName} from '../store/slices/UserSlice';
 import {useSelector} from 'react-redux'
+import { useCookies } from 'react-cookie';
 
 
     const BodyContainer = styled.div`
@@ -74,7 +75,8 @@ import {useSelector} from 'react-redux'
 
 const ClubsHome = () => {
 
-  const username = useSelector(selectUserName);
+  const [cookies] = useCookies(['username']);
+  const username = cookies.username;
 
     const [clubDetails, setClubDetails] = useState({
         name: '',
@@ -229,7 +231,6 @@ const ClubsHome = () => {
 
   return (
     <>
-    {!username && gotoLogin()}
       <BodyContainer>
       {!createClub&&<h1>Clubs</h1>}
       

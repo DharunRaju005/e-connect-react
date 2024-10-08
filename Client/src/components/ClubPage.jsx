@@ -4,10 +4,12 @@ import { useNavigate, useParams} from 'react-router-dom'
 import { format, parseISO } from 'date-fns';
 import {selectUserName} from '../store/slices/UserSlice';
 import {useSelector} from 'react-redux'
+import { useCookies } from 'react-cookie';
 
 const ClubPage = () => {
 
-    const username = useSelector(selectUserName);
+    const [cookies] = useCookies(['username']);
+    const username = cookies.username;
 
     const [isFollowed, setFollowed] = useState(false);
     const [myClub, setMyClub] = useState(false);
@@ -50,6 +52,11 @@ const ClubPage = () => {
           });
 
           const data = await response.json();
+          if(response.status === 201){
+            alert("Club has been removed due to spam detection");
+            navigate("/clubs");
+            return;
+          }
           if (response.ok) {
               alert('Club reported as spam successfully.');
               setchanges((changes+1)%2);
@@ -301,7 +308,6 @@ const ClubPage = () => {
 
   return (
     <ClubPageContainer>
-      {!username && gotoLogin()}
       <Button onClick={()=>navigate('/clubs')} style={{background:"grey"}}>Back to Clubs Home</Button>
         {!isEditOpen  && !loading && !error && <ClubHeader>
             <ClubLogo>
