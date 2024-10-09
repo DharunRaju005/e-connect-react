@@ -364,7 +364,7 @@ const ClubPage = () => {
             {currentPage=="About" && <About>
                 <h2>Welcome to {club.clubName}</h2>
                 <p style={{textAlign:'justify', margin:"12px", alignItems:"center", maxWidth : "50%"}}>{club.about}</p>
-                <Button onClick={()=>window.location.href = `${club.contact}`} style={{background : "#777777"}}>{club.contact}</Button>
+                <Button onClick={()=>window.location.href = `${club.contact}`} style={{background : "green"}}>{club.contact}</Button>
                 
             </About>}
         </ClubBody>}
